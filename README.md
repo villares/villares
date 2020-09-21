@@ -6,6 +6,7 @@
 - 💬 Ask me about drawing with Python!
 - 📫 How to reach me: [twitter.com/villares](https://twitter.com/villares)
 - 😄 Pronouns: he/him
+- ⚡ Fun fact: I think I actually need a repo named *villares* to store some code snipets
 
 <!--
 **villares/villares** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
