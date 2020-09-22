@@ -1,5 +1,9 @@
 ### Hi there 👋
 
+<img src="https://abav.lugaralgum.com/sketch-a-day/2020/sketch_2020_09_17deque/sketch_2020_09_17deque.gif">
+
+> This animation is made with points in a Python collections.deque data structure, added by dragging the mouse in Processing Python mode.
+
 - 🔭 I'm currently working on a PhD at Unicamp
 - 🌱 I’m currently learning how not to talk too much and concentrate
 - 👯 I’m looking to collaborate on open resources to teach programming in a visual context
