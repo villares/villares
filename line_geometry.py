@@ -57,7 +57,6 @@ def inter_lines(L, poly_points):
 
         
 class Line():
-        
     def __init__(self, p1, p2):
         self.p1 = PVector(*p1)
         self.p2 = PVector(*p2) 
@@ -67,8 +66,6 @@ class Line():
         
     def plot(self):
         line(self.p1.x, self.p1.y, self.p2.x, self.p2.y)
-    
-    draw = plot
     
     def lerp(self, other, t):
         p1 = PVector.lerp(self.p1, other.p1, t)
