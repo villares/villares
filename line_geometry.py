@@ -67,10 +67,15 @@ class Line():
     def plot(self):
         line(self.p1.x, self.p1.y, self.p2.x, self.p2.y)
     
+    draw = plot
+    
     def lerp(self, other, t):
         p1 = PVector.lerp(self.p1, other.p1, t)
         p2 = PVector.lerp(self.p2, other.p2, t)
         return Line(p1, p2)
+    
+    def instersect(self, other):
+        return line_instersect(line_a, line_b)   
     
 def line_instersect(line_a, line_b):     
     """
@@ -92,26 +97,6 @@ def line_instersect(line_a, line_b):
     y = line_a.p1.y + uA * (line_a.p2.y - line_a.p1.y)
         
     return PVector(x, y)
-    # """
-    # code adapted from 
-    # https://stackoverflow.com/questions/27745972/test-if-polylines-intersects-using-python
-    # """
-    # xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-    # ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
-
-    # def det(a, b):
-    #     return a[0] * b[1] - a[1] * b[0]
-
-    # div = det(xdiff, ydiff)
-    # if div == 0:
-    #    return None
-
-    # d = (det(*line1), det(*line2))
-    # x = det(d, xdiff) / div
-    # y = det(d, ydiff) / div
-    # return x, y
-    # return PVector(x, y)
-
 
 def edges(poly_points):
     return pairwise(poly_points) + [(poly_points[-1], poly_points[0])]   
