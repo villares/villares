@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+2020-09-22 Merged/renamed several versions
+"""
 
-from line_geometry import intersecting, triangle_area
+from line_geometry import is_poly_self_intersecting, triangle_area
 
 ROTATION = {0: 0,
             BOTTOM: 0,
@@ -293,7 +296,6 @@ def arc_augmented_poly(op_list,
     """
     2020-09-22 Renamed from b_poly_arc_augmented 
     """
-    
     if not op_list:
         return
     if or_list == None:
@@ -352,10 +354,8 @@ def arc_augmented_poly(op_list,
         for ang, p1, p2 in a_list:
             pontos.append(p1)
             pontos.append(p2)
-        if intersecting(pontos):
+        if is_poly_self_intersecting(pontos):
             return True
-        # else:
-        #     return False
     # draw
     beginShape()
     for i1, ia in enumerate(a_list):
@@ -377,11 +377,10 @@ def arc_augmented_poly(op_list,
 
             if abs(a2 - start) != TWO_PI:
                 if bezier_mode:
-                    b_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2,
-                          mode=2)
+                    b_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2)
                 else:
-                    p_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2,
-                          mode=2, num_points=4)
+                    p_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2,
+                          num_points=4, vertex_func=vertex_func)
             # textSize(32)
             # text(str(int(degrees(start - a2))), p2[0], p2[1])
         else:
@@ -395,10 +394,7 @@ def arc_augmented_poly(op_list,
     endShape(CLOSE)
 
     if check_intersection:
-        if intersecting(pontos_):
-            return True
-        else:
-            return False
+        return is_poly_self_intersecting(pontos_)
 
 def reduce_radius(p1, p2, r1, r2):
     d = dist(p1[0], p1[1], p2[0], p2[1])
