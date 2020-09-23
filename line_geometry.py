@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-def intersecting(poly_points):
+def is_poly_self_intersecting(poly_points):
     ed = edges(poly_points)
     intersect = False
     for p1, p2 in ed[::-1]:
