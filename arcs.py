@@ -107,7 +107,9 @@ def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, num_points=None):
     p_arc(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
           mode=mode, num_points=num_points)
                                 
-def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0, num_points=None):
+
+def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
+         num_points=None, vertex_func=vertex):
     """
     A poly approximation of an arc
     using the same signature as the original Processing arc()
@@ -129,7 +131,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0, num_points=None):
         while a >= start_angle:
                 sx = cx + cos(a) * w / 2.
                 sy = cy + sin(a) * h / 2.
-                vertex(sx, sy)
+                vertex_func(sx, sy)
                 a -= angle   
     elif sweep_angle > 0:
         angle = sweep_angle / int(num_points)
@@ -137,19 +139,15 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0, num_points=None):
         while a <= end_angle:
                 sx = cx + cos(a) * w / 2.
                 sy = cy + sin(a) * h / 2.
-                vertex(sx, sy)
+                vertex_func(sx, sy)
                 a += angle
     else:
         sx = cx + cos(start_angle) * w / 2.
         sy = cy + sin(start_angle) * h / 2.
-        vertex(sx, sy)
+        vertex_func(sx, sy)
     if mode == 0:
         endShape()
 
-
-            
-
-        
         
 def poly_rounded2(p_list, r_list, open_poly=False, arc_func=arc):
     """
@@ -288,7 +286,7 @@ def circ_circ_tangent(p1, p2, r1, r2):
                 (p2[0], p2[1]))
 
                 
-def arc_augmented_poly2(op_list,
+def arc_augmented_poly(op_list,
                        or_list=None,
                        check_intersection=False,
                        bezier_mode=True):
