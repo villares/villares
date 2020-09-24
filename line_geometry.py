@@ -80,10 +80,10 @@ def points_are_colinear(ax, ay, bx, by, cx, cy,
     area = triangle_area((ax, ay), (bx, by), (cx, cy))
     return abs(area) < tolerance
 
-def triangle_area(p0, a, b):
-    area = (a[0] * (b[1] - p0[1]) +
-            b[0] * (p0[1] - a[1]) +
-            p0[0] * (a[1] - b[1]))
+def triangle_area(a, b, c):
+    area = (a[0] * (b[1] - c[1]) +
+            b[0] * (c[1] - a[1]) +
+            c[0] * (a[1] - b[1]))
     return area
 
 # class Poly():
