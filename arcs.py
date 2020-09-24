@@ -168,8 +168,8 @@ def arc_filleted_poly(p_list,
                                  [p_list[-2]] + [p_list[-1]] + p_list[:-2],
                                  [r_list[-1]] + r_list[:-1]
                                  ):
-            m1 = (PVector(p0.x, p0.y) + PVector(p1.x, p1.y)) / 2
-            m2 = (PVector(p2.x, p2.y) + PVector(p1.x, p1.y)) / 2
+            m1 = (PVector(p0[0], p0[1]) + PVector(p1[0], p1[1])) / 2
+            m2 = (PVector(p2[0], p2[1]) + PVector(p1[0], p1[1])) / 2
             arc_corner(p1, m1, m2, r, arc_func)
         endShape(CLOSE)
     else:
@@ -178,8 +178,8 @@ def arc_filleted_poly(p_list,
                                  [p_list[-2]] + [p_list[-1]] + p_list[:-3],
                                  [r_list[-1]] + r_list[:-2]
                                  ):
-            m1 = (PVector(p0.x, p0.y) + PVector(p1.x, p1.y)) / 2
-            m2 = (PVector(p2.x, p2.y) + PVector(p1.x, p1.y)) / 2
+            m1 = (PVector(p0[0], p0[1]) + PVector(p1[0], p1[1])) / 2
+            m2 = (PVector(p2[0], p2[1]) + PVector(p1[0], p1[1])) / 2
             arc_corner(p1, m1, m2, r, arc_func)
         endShape()
 
@@ -190,11 +190,11 @@ def arc_corner(pc, p1, p2, r, arc_func=b_arc):
     """
     def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
-        return PVector((pt.x - dx * factor), (pt.y - dy * factor))
+        return PVector((pt[0] - dx * factor), (pt[1] - dy * factor))
 
     # Vectors 1 and 2
-    dx1, dy1 = pc.x - p1.x, pc.y - p1.y
-    dx2, dy2 = pc.x - p2.x, pc.y - p2.y
+    dx1, dy1 = pc[0] - p1[0], pc[1] - p1[1]
+    dx2, dy2 = pc[0] - p2[0], pc[1] - p2[1]
     # Angle between vector 1 and vector 2 divided by 2
     angle = (atan2(dy1, dx1) - atan2(dy2, dx2)) / 2
     # The length of segment between angular point and the
@@ -216,8 +216,8 @@ def arc_corner(pc, p1, p2, r, arc_func=b_arc):
     p2Cross = proportion_point(pc, segment, length2, dx2, dy2)
     # Calculation of the coordinates of the circle
     # center by the addition of angular vectors.
-    dx = pc.x * 2 - p1Cross.x - p2Cross.x
-    dy = pc.y * 2 - p1Cross.y - p2Cross.y
+    dx = pc[0] * 2 - p1Cross.x - p2Cross.x
+    dy = pc[1] * 2 - p1Cross.y - p2Cross.y
     L = sqrt(dx * dx + dy * dy)
     d = sqrt(segment * segment + max_r * max_r)
     arc_center = proportion_point(pc, d, L, dx, dy)
@@ -273,9 +273,9 @@ def arc_augmented_poly(op_list,
     if check_intersection and arc_func:
         warn("check_intersection mode overrides arc_func! Don't use them together.")
     if check_intersection:
-        global pontos_, vertex_func
-        pontos_ = []
-        vertex_func = lambda x, y: pontos_.append((x, y))
+        global _points, vertex_func
+        _points = []
+        vertex_func = lambda x, y: _points.append((x, y))
         arc_func = p_arc
         kwargs = {"num_points": 4, "vertex_func": vertex_func}
     else:
@@ -317,13 +317,13 @@ def arc_augmented_poly(op_list,
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
         cct = circ_circ_tangent(p1, p2, r1, r2)
         a_list.append(cct)
-    # check intersection
+    # check basic "skeleton poly" intersection (whithout the p_arc aprox.)
     if check_intersection:
-        pontos = []
+        skeleton_points = []
         for ang, p1, p2 in a_list:
-            pontos.append(p1)
-            pontos.append(p2)
-        if is_poly_self_intersecting(pontos):
+            skeleton_points.append(p1)
+            skeleton_points.append(p2)
+        if is_poly_self_intersecting(skeleton_points):
             return True
     # now draw it!
     beginShape()
@@ -360,8 +360,9 @@ def arc_augmented_poly(op_list,
             if a2:
                 vertex_func(p21[0], p21[1])
     endShape(CLOSE)
+    # check augmented poly aproximation instersection
     if check_intersection:
-        return is_poly_self_intersecting(pontos_)
+        return is_poly_self_intersecting(_points)
 
 def reduce_radius(p1, p2, r1, r2):
     d = dist(p1[0], p1[1], p2[0], p2[1])
