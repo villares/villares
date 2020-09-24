@@ -5,6 +5,7 @@
 
 from line_geometry import is_poly_self_intersecting, triangle_area
 
+DEBUG = False
 ROTATION = {0: 0,
             BOTTOM: 0,
             DOWN: 0,
@@ -39,7 +40,7 @@ def b_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0):
           mode=mode)
 
 def b_arc_naked(cx, cy, w, h, start_angle, end_angle):
-    b_arc(cx, cy, w, h, start_angle, end_angle, mode = 2)
+    b_arc(cx, cy, w, h, start_angle, end_angle, mode=2)
 
 def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
     """
@@ -93,9 +94,9 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
         # ellipse(px3, py3, 15, 15)
         # ellipse(px0, py0, 5, 5)
     # Drawing
-    if mode == 0: # 'normal' arc (not 'middle' nor 'naked')
+    if mode == 0:  # 'normal' arc (not 'middle' nor 'naked')
         beginShape()
-    if mode != 1: # if not 'middle'
+    if mode != 1:  # if not 'middle'
         vertex(px3, py3)
     if abs(theta) < HALF_PI:
         bezierVertex(px2, py2, px1, py1, px0, py0)
@@ -103,16 +104,16 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
         # to avoid distortion, break into 2 smaller arcs
         b_arc(cx, cy, w, h, start_angle, end_angle - theta / 2.0, mode=1)
         b_arc(cx, cy, w, h, start_angle + theta / 2.0, end_angle, mode=1)
-    if mode == 0: # end of a 'normal' arc
+    if mode == 0:  # end of a 'normal' arc
         endShape()
 
 def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, num_points=None):
     p_arc(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
           mode=mode, num_points=num_points)
-                                
+
 
 def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
-         num_points=None, vertex_func=vertex):
+          num_points=None, vertex_func=vertex):
     """
     A poly approximation of an arc
     using the same signature as the original Processing arc()
@@ -121,29 +122,29 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
           for use inside a larger PShape
     """
     if not num_points:
-        num_points = 24  
+        num_points = 24
     # start_angle = start_angle if start_angle < end_angle else start_angle - TWO_PI
-    sweep_angle = end_angle - start_angle  
+    sweep_angle = end_angle - start_angle
     if mode == 0:
-            beginShape()
+        beginShape()
     if sweep_angle < 0:
         start_angle, end_angle = end_angle, start_angle
-        sweep_angle = -sweep_angle 
+        sweep_angle = -sweep_angle
         angle = sweep_angle / int(num_points)
         a = end_angle
         while a >= start_angle:
-                sx = cx + cos(a) * w / 2.
-                sy = cy + sin(a) * h / 2.
-                vertex_func(sx, sy)
-                a -= angle   
+            sx = cx + cos(a) * w / 2.
+            sy = cy + sin(a) * h / 2.
+            vertex_func(sx, sy)
+            a -= angle
     elif sweep_angle > 0:
         angle = sweep_angle / int(num_points)
         a = start_angle
         while a <= end_angle:
-                sx = cx + cos(a) * w / 2.
-                sy = cy + sin(a) * h / 2.
-                vertex_func(sx, sy)
-                a += angle
+            sx = cx + cos(a) * w / 2.
+            sy = cy + sin(a) * h / 2.
+            vertex_func(sx, sy)
+            a += angle
     else:
         sx = cx + cos(start_angle) * w / 2.
         sy = cy + sin(start_angle) * h / 2.
@@ -151,149 +152,114 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
     if mode == 0:
         endShape()
 
-        
-def poly_rounded2(p_list, r_list, open_poly=False, arc_func=arc):
+
+def arc_filleted_poly(p_list,
+                      r_list,
+                      open_poly=False,
+                      arc_func=p_arc):
     """
-    draws a 'filleted' polygon with variable radius
-    dependent on roundedCorner()
+    Draws a 'filleted' polygon with variable radius, depends on arc_corner()
+    2020-09-24 Rewritten from poly_rounded2 to be a continous PShape 
     """
+    p_list = list(p_list)
+    r_list = list(r_list)
+    beginShape()
     if not open_poly:
-        with pushStyle():
-            noStroke()
-            beginShape()
-            for p0, p1 in zip(p_list, [p_list[-1]] + p_list[:-1]):
-                m = (PVector(p0.x, p0.y) + PVector(p1.x, p1.y)) / 2
-                vertex(m.x, m.y)
-            endShape(CLOSE)
         for p0, p1, p2, r in zip(p_list,
-                                [p_list[-1]] + p_list[:-1],
-                                [p_list[-2]] + [p_list[-1]] + p_list[:-2],
-                                [r_list[-1]] + r_list[:-1]
-                                ):
+                                 [p_list[-1]] + p_list[:-1],
+                                 [p_list[-2]] + [p_list[-1]] + p_list[:-2],
+                                 [r_list[-1]] + r_list[:-1]
+                                 ):
             m1 = (PVector(p0.x, p0.y) + PVector(p1.x, p1.y)) / 2
             m2 = (PVector(p2.x, p2.y) + PVector(p1.x, p1.y)) / 2
-            roundedCorner(p1, m1, m2, r, arc_func)
+            arc_corner(p1, m1, m2, r, arc_func)
+        endShape(CLOSE)
     else:
-            for p0, p1, p2, r in zip(p_list[:-1],
-                                [p_list[-1]] + p_list[:-2],
-                                [p_list[-2]] + [p_list[-1]] + p_list[:-3],
-                                [r_list[-1]] + r_list[:-2]
-                                ):
-                m1 = (PVector(p0.x, p0.y) + PVector(p1.x, p1.y)) / 2
-                m2 = (PVector(p2.x, p2.y) + PVector(p1.x, p1.y)) / 2
-                roundedCorner(p1, m1, m2, r, arc_func)
-            
+        for p0, p1, p2, r in zip(p_list[:-1],
+                                 [p_list[-1]] + p_list[:-2],
+                                 [p_list[-2]] + [p_list[-1]] + p_list[:-3],
+                                 [r_list[-1]] + r_list[:-2]
+                                 ):
+            m1 = (PVector(p0.x, p0.y) + PVector(p1.x, p1.y)) / 2
+            m2 = (PVector(p2.x, p2.y) + PVector(p1.x, p1.y)) / 2
+            arc_corner(p1, m1, m2, r, arc_func)
+        endShape()
 
-def roundedCorner(pc, p1, p2, r, arc_func):
+def arc_corner(pc, p1, p2, r, arc_func=b_arc):
     """
-    Based on Stackoverflow C# rounded corner post 
-    https://stackoverflow.com/questions/24771828/algorithm-for-creating-rounded-corners-in-a-polygon
+    Draw an arc that 'rounds' the point pc between p1 and p2 using arc_func
+    Based on '...rounded corners in a polygon' from https://stackoverflow.com/questions/24771828/
     """
-    
-    def GetProportionPoint(pt, segment, L, dx, dy):
+    def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
         return PVector((pt.x - dx * factor), (pt.y - dy * factor))
 
-    # Vector 1
-    dx1 = pc.x - p1.x
-    dy1 = pc.y - p1.y
-
-    # Vector 2
-    dx2 = pc.x - p2.x
-    dy2 = pc.y - p2.y
-
+    # Vectors 1 and 2
+    dx1, dy1 = pc.x - p1.x, pc.y - p1.y
+    dx2, dy2 = pc.x - p2.x, pc.y - p2.y
     # Angle between vector 1 and vector 2 divided by 2
     angle = (atan2(dy1, dx1) - atan2(dy2, dx2)) / 2
-
     # The length of segment between angular point and the
     # points of intersection with the circle of a given radius
     tng = abs(tan(angle))
     segment = r / tng if tng != 0 else r
-
     # Check the segment
     length1 = sqrt(dx1 * dx1 + dy1 * dy1)
     length2 = sqrt(dx2 * dx2 + dy2 * dy2)
-
     min_len = min(length1, length2)
-
     if segment > min_len:
         segment = min_len
         max_r = min_len * abs(tan(angle))
     else:
         max_r = r
-
     # Points of intersection are calculated by the proportion between
     # length of vector and the length of the segment.
-    p1Cross = GetProportionPoint(pc, segment, length1, dx1, dy1)
-    p2Cross = GetProportionPoint(pc, segment, length2, dx2, dy2)
-
+    p1Cross = proportion_point(pc, segment, length1, dx1, dy1)
+    p2Cross = proportion_point(pc, segment, length2, dx2, dy2)
     # Calculation of the coordinates of the circle
     # center by the addition of angular vectors.
     dx = pc.x * 2 - p1Cross.x - p2Cross.x
     dy = pc.y * 2 - p1Cross.y - p2Cross.y
-
     L = sqrt(dx * dx + dy * dy)
     d = sqrt(segment * segment + max_r * max_r)
-
-    circlePoint = GetProportionPoint(pc, d, L, dx, dy)
-
-    # StartAngle and EndAngle of arc
-    startAngle = atan2(p1Cross.y - circlePoint.y, p1Cross.x - circlePoint.x)
-    endAngle = atan2(p2Cross.y - circlePoint.y, p2Cross.x - circlePoint.x)
-
+    arc_center = proportion_point(pc, d, L, dx, dy)
+    # start_angle and end_angle of arc
+    start_angle = atan2(p1Cross.y - arc_center.y, p1Cross.x - arc_center.x)
+    end_angle = atan2(p2Cross.y - arc_center.y, p2Cross.x - arc_center.x)
     # Sweep angle
-    sweepAngle = endAngle - startAngle
-
+    sweep_angle = end_angle - start_angle
     # Some additional checks
-    if sweepAngle < 0:
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = -sweepAngle
+    nsa = False  # negative sweep angle
+    if sweep_angle < 0:
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = -sweep_angle
+        nsa = True
+        if DEBUG:
+            circle(arc_center.x, arc_center.y, max_r / 2)
+    lsa = False  # large sweep angle
+    if sweep_angle > PI:
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = TWO_PI - sweep_angle
+        lsa = True
+        if DEBUG:
+            circle(arc_center.x, arc_center.y, max_r)
+    if (lsa and nsa) or (not lsa and not nsa):
+        # reverse sweep direction
+        start_angle, end_angle = end_angle, start_angle
+        sweep_angle = -sweep_angle
+    # draw "naked" arc (without beginShape & endShape)
+    arc_func(arc_center.x, arc_center.y, 2 * max_r, 2 * max_r,
+             start_angle, start_angle + sweep_angle, mode=2)
 
-    if sweepAngle > PI:
-        startAngle, endAngle = endAngle, startAngle
-        sweepAngle = TWO_PI - sweepAngle
 
-    # Draw result using graphics
-    # noStroke()
-    with pushStyle():
-        noStroke()
-        beginShape()
-        vertex(p1.x, p1.y)
-        vertex(p1Cross.x, p1Cross.y)
-        vertex(p2Cross.x, p2Cross.y)
-        vertex(p2.x, p2.y)
-        endShape(CLOSE)
-
-    line(p1.x, p1.y, p1Cross.x, p1Cross.y)
-    line(p2.x, p2.y, p2Cross.x, p2Cross.y)
-    arc_func(circlePoint.x, circlePoint.y, 2 * max_r, 2 * max_r,
-        startAngle, startAngle + sweepAngle)
-
-  
-def circ_circ_tangent(p1, p2, r1, r2):
-    d = dist(p1[0], p1[1], p2[0], p2[1])
-    ri = r1 - r2
-    line_angle = atan2(p1[0] - p2[0], p2[1] - p1[1])
-    if d - abs(ri) >= 0:
-        theta = asin(ri / float(d))
-        x1 = -cos(line_angle + theta) * r1
-        y1 = -sin(line_angle + theta) * r1
-        x2 = -cos(line_angle + theta) * r2
-        y2 = -sin(line_angle + theta) * r2
-        return (line_angle + theta,
-                (p1[0] - x1, p1[1] - y1),
-                (p2[0] - x2, p2[1] - y2))
-    else:
-        return (None,
-                (p1[0], p1[1]),
-                (p2[0], p2[1]))
-
-                
 def arc_augmented_poly(op_list,
                        or_list=None,
                        check_intersection=False,
                        bezier_mode=True):
     """
+    Draw a continous PShape "Polyline" as if around pins of various diameters.
+    Has an ugly check_intersection mode that dows not draw and "roughly" checks
+    for self intersections using slow polygon aproximations.
     2020-09-22 Renamed from b_poly_arc_augmented 
     """
     if not op_list:
@@ -304,7 +270,6 @@ def arc_augmented_poly(op_list,
         r2_list = or_list[:]
     assert len(op_list) == len(r2_list), \
         "Number of points and radii not the same"
-
     if check_intersection:
         bezier_mode = False
         global pontos_, vertex_func
@@ -356,14 +321,14 @@ def arc_augmented_poly(op_list,
             pontos.append(p2)
         if is_poly_self_intersecting(pontos):
             return True
-    # draw
+    # now draw it!
     beginShape()
     for i1, ia in enumerate(a_list):
         i2 = (i1 + 1) % len(a_list)
         p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
         a1, p11, p12 = ia
         a2, p21, p22 = a_list[i2]
-        # circle(p1[0], p1[1], 10)
+        if DEBUG: circle(p1[0], p1[1], 10)
         if a1 != None and a2 != None:
             start = a1 if a1 < a2 else a1 - TWO_PI
             if r2 <= 0:
@@ -371,28 +336,25 @@ def arc_augmented_poly(op_list,
             abs_angle = abs(a2 - start)
             if abs_angle > TWO_PI:
                 if a2 < 0:
-                    a2 += TWO_PI  # a2 = a2 + TWO_PI
+                    a2 += TWO_PI 
                 else:
-                    a2 -= TWO_PI  # a2 = a2 - TWO_PI
-
+                    a2 -= TWO_PI
             if abs(a2 - start) != TWO_PI:
                 if bezier_mode:
                     b_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2)
                 else:
                     p_arc(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2,
                           num_points=4, vertex_func=vertex_func)
-            # textSize(32)
-            # text(str(int(degrees(start - a2))), p2[0], p2[1])
+            if DEBUG: textSize(32);text(str(int(degrees(start - a2))), p2[0], p2[1])
         else:
             # when the the segment is smaller than the diference between
             # radius, circ_circ_tangent won't renturn the angle
-            # ellipse(p2[0], p2[1], r2 * 2, r2 * 2) # debug
+            if DEBUG: ellipse(p2[0], p2[1], r2 * 2, r2 * 2)
             if a1:
                 vertex_func(p12[0], p12[1])
             if a2:
                 vertex_func(p21[0], p21[1])
     endShape(CLOSE)
-
     if check_intersection:
         return is_poly_self_intersecting(pontos_)
 
@@ -405,3 +367,21 @@ def reduce_radius(p1, p2, r1, r2):
         else:
             r2 = map(d, ri + 1, 0, r2, r1)
     return(r1, r2)
+
+def circ_circ_tangent(p1, p2, r1, r2):
+    d = dist(p1[0], p1[1], p2[0], p2[1])
+    ri = r1 - r2
+    line_angle = atan2(p1[0] - p2[0], p2[1] - p1[1])
+    if d - abs(ri) >= 0:
+        theta = asin(ri / float(d))
+        x1 = -cos(line_angle + theta) * r1
+        y1 = -sin(line_angle + theta) * r1
+        x2 = -cos(line_angle + theta) * r2
+        y2 = -sin(line_angle + theta) * r2
+        return (line_angle + theta,
+                (p1[0] - x1, p1[1] - y1),
+                (p2[0] - x2, p2[1] - y2))
+    else:
+        return (None,
+                (p1[0], p1[1]),
+                (p2[0], p2[1]))
