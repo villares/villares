@@ -122,9 +122,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
-    if not num_points:
-        num_points = 24
-    # start_angle = start_angle if start_angle < end_angle else start_angle - TWO_PI
+    num_points = num_points or 24
     sweep_angle = end_angle - start_angle
     if mode == 0:
         beginShape()
@@ -146,7 +144,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
             sy = cy + sin(a) * h / 2.
             vertex_func(sx, sy)
             a += angle
-    else:
+    else:  # sweep_angle == 0
         sx = cx + cos(start_angle) * w / 2.
         sy = cy + sin(start_angle) * h / 2.
         vertex_func(sx, sy)
@@ -162,8 +160,7 @@ def arc_filleted_poly(p_list,
     Draws a 'filleted' polygon with variable radius, depends on arc_corner()
     2020-09-24 Rewritten from poly_rounded2 to be a continous PShape 
     """
-    p_list = list(p_list)
-    r_list = list(r_list)
+    p_list, r_list = list(p_list), list(r_list)
     beginShape()
     if not open_poly:
         for p0, p1, p2, r in zip(p_list,
