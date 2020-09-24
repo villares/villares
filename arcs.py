@@ -271,8 +271,7 @@ def arc_augmented_poly(op_list,
     assert len(op_list) == len(r2_list), \
         "Number of points and radii not the same"
     if check_intersection and arc_func:
-        warn(
-            "check_intersection mode overrides arc_func! Don't use them together.")
+        warn("check_intersection mode overrides arc_func! Don't use them together.")
     if check_intersection:
         global pontos_, vertex_func
         pontos_ = []
