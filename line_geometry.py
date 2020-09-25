@@ -162,26 +162,30 @@ def edges_as_sets(poly_points):
 
 
 def min_max(points):
+    """
+    Return two PVectors with the most extreme coordinates,
+    resulting in "bounding box" corners.
+    """
     points = iter(points)
     try:
         p = points.next()
-        min_x, min_y = max_x, max_y = p.x, p.y
+        min_x, min_y = max_x, max_y = p[0], p[1]
     except StopIteration:
         raise ValueError, "min_max requires at least one point"
     for p in points:
-        if p.x < min_x:
-            min_x = p.x
-        elif p.x > max_x:
-            max_x = p.x
-        if p.y < min_y:
-            min_y = p.y
-        elif p.y > max_y:
-            max_y = p.y
+        if p[0] < min_x:
+            min_x = p[0]
+        elif p[0] > max_x:
+            max_x = p[0]
+        if p[1] < min_y:
+            min_y = p[1]
+        elif p[1] > max_y:
+            max_y = p[1]
     return (PVector(min_x, min_y),
             PVector(max_x, max_y))
 
 def par_hatch(points, divisions, *sides):
-    vectors = [PVector(p.x, p.y) for p in points]
+    vectors = [PVector(p[0], p[1]) for p in points]
     lines = []
     if not sides:
         sides = [0]
