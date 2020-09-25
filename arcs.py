@@ -52,6 +52,8 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
+    # Based on ideas from Richard DeVeneza via code by Gola Levin:
+    # http://www.flong.com/blog/2009/bezier-approximation-of-a-circular-arc-in-processing/
     theta = end_angle - start_angle
     # Compute raw Bezier coordinates.
     if mode != 1 or abs(theta) < HALF_PI:
@@ -60,10 +62,7 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
         x3 = x0
         y3 = 0 - y0
         x1 = (4.0 - x0) / 3.0
-        if y0 != 0:
-            y1 = ((1.0 - x0) * (3.0 - x0)) / (3.0 * y0)  # y0 != 0...
-        else:
-            y1 = 0
+        y1 = ((1.0 - x0) * (3.0 - x0)) / (3.0 * y0) if y0 != 0 else 0
         x2 = x1
         y2 = 0 - y1
         # Compute rotationally-offset Bezier coordinates, using:
@@ -90,10 +89,10 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
         py2 = cy + ry * ry2
         px3 = cx + rx * rx3
         py3 = cy + ry * ry3
-        # Debug points... comment this out!
-        # stroke(0)
-        # ellipse(px3, py3, 15, 15)
-        # ellipse(px0, py0, 5, 5)
+        if DEBUG: 
+            stroke(0)
+            ellipse(px3, py3, 3, 3)
+            ellipse(px0, py0, 5, 5)
     # Drawing
     if mode == 0:  # 'normal' arc (not 'middle' nor 'naked')
         beginShape()
@@ -348,7 +347,7 @@ def arc_augmented_poly(op_list,
                 arc_func(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2,
                          **kwargs)
             if DEBUG:
-                textSize(32)
+                textSize(width / 30)
                 text(str(int(degrees(start - a2))), p2[0], p2[1])
         else:
             # when the the segment is smaller than the diference between
