@@ -2,7 +2,7 @@
 
 # From github.com/villares/villares/file_helpers.py
 
-# 2020_9_25 Added comment with date and URL!
+# 2020-9-25 Added comment with date and URL!
 
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
