@@ -131,24 +131,24 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
     if sweep_angle < 0:
         start_angle, end_angle = end_angle, start_angle
         sweep_angle = -sweep_angle
-        angle = sweep_angle / int(num_points)
+        angle = float(sweep_angle) / abs(num_points)
         a = end_angle
         while a >= start_angle:
-            sx = cx + cos(a) * w / 2.
-            sy = cy + sin(a) * h / 2.
+            sx = cx + cos(a) * w / 2.0
+            sy = cy + sin(a) * h / 2.0
             vertex_func(sx, sy)
             a -= angle
     elif sweep_angle > 0:
         angle = sweep_angle / int(num_points)
         a = start_angle
         while a <= end_angle:
-            sx = cx + cos(a) * w / 2.
-            sy = cy + sin(a) * h / 2.
+            sx = cx + cos(a) * w / 2.0
+            sy = cy + sin(a) * h / 2.0
             vertex_func(sx, sy)
             a += angle
     else:  # sweep_angle == 0
-        sx = cx + cos(start_angle) * w / 2.
-        sy = cy + sin(start_angle) * h / 2.
+        sx = cx + cos(start_angle) * w / 2.0
+        sy = cy + sin(start_angle) * h / 2.0
         vertex_func(sx, sy)
     if mode == 0:
         endShape()
