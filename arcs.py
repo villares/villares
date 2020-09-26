@@ -393,3 +393,57 @@ def circ_circ_tangent(p1, p2, r1, r2):
         return (None,
                 (p1[0], p1[1]),
                 (p2[0], p2[1]))
+
+def bar(x1, y1, x2, y2, thickness, shorter=0, arc_func=b_arc, **kwargs):
+    """
+    Draw a thick strip with rounded ends.
+    It can be shorter than the supporting (axial) line segment.
+    
+    # 2020-9-25 First rewrite attempt based on var_bar + arc_func + **kwargs
+    """
+    L = dist(x1, y1, x2, y2)
+    with pushMatrix():
+        translate(x1, y1)
+        angle = atan2(x1 - x2, y2 - y1)
+        rotate(angle)
+        offset = shorter / 2
+        var_bar(0, offset, 0, L - offset,
+                thickness / 2, thickness / 2,
+                arc_func=arc_func, **kwargs)
+
+def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, arc_func=b_arc, **kwargs):
+    """
+    Tangent/tangent shape on 2 circles of arbitrary radius
+
+    # 2020-9-25 Added arc_func and **kwargs for use with p_arc num_points=N argument.   
+    """
+    if r2 is None:
+        r2 = r1
+    #line(p1x, p1y, p2x, p2y)
+    d = dist(p1x, p1y, p2x, p2y)
+    ri = r1 - r2
+    if d > abs(ri):
+        rid = (r1 - r2) / d
+        if rid > 1:
+            rid = 1
+        if rid < -1:
+            rid = -1
+        beta = asin(rid) + HALF_PI
+        with pushMatrix():
+            translate(p1x, p1y)
+            angle = atan2(p1x - p2x, p2y - p1y)
+            rotate(angle + HALF_PI)
+            x1 = cos(beta) * r1
+            y1 = sin(beta) * r1
+            x2 = cos(beta) * r2
+            y2 = sin(beta) * r2
+            #print((d, beta, ri, x1, y1, x2, y2))
+            beginShape()  
+            arc_func(0, 0, r1 * 2, r1 * 2,
+                -beta - PI, beta - PI, mode=2, **kwargs)
+            arc_func(d, 0, r2 * 2, r2 * 2,
+                beta - PI, PI - beta, mode=2, **kwargs)
+            endShape(CLOSE)
+    else:
+        ellipse(p1x, p1y, r1 * 2, r1 * 2)
+        ellipse(p2x, p2y, r2 * 2, r2 * 2)
