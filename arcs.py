@@ -2,6 +2,7 @@
 """
 2020-09-22 Merges/renames several versions of the arc related functions
 2020-09-24 Updates arc_filleted_poly and arc_augmented_poly
+2020-09-25 linked villares/villares/arcs.py to arc/tangents_a_and_bezier_studies/arc.py
 """
 from warnings import warn
 from line_geometry import is_poly_self_intersecting, triangle_area
