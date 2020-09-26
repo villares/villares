@@ -11,6 +11,4 @@
 - 💬 Ask me about drawing with Python!
 - 📫 How to reach me: [twitter.com/villares](https://twitter.com/villares)
 - 😄 Pronouns: he/him
-- ⚡ Fun fact: I think I actually need a repo named *villares* to store some code <script>snipets</script>
-
-
+- ⚡ Fun fact: I think I actually need a repo named *villares* to store some [code](github.com/villares/villaes).
