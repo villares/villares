@@ -1,5 +1,9 @@
 # -*- coding: UTF-8 -*-
+"""
+From github.com/villares/villares/line_geometry.py
 
+2020-09-25
+"""
 
 class Line():
 

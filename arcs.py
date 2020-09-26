@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
+From github.com/villares/villares/arcs.py
+
 2020-09-22 Merges/renames several versions of the arc related functions
 2020-09-24 Updates arc_filleted_poly and arc_augmented_poly
-2020-09-25 linked villares/villares/arcs.py to arc/tangents_a_and_bezier_studies/arc.py
+2020-09-25 Added bar and var_bar
 """
 from warnings import warn
 from line_geometry import is_poly_self_intersecting, triangle_area
@@ -90,8 +92,7 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
         py2 = cy + ry * ry2
         px3 = cx + rx * rx3
         py3 = cy + ry * ry3
-        if DEBUG: 
-            stroke(0)
+        if DEBUG:
             ellipse(px3, py3, 3, 3)
             ellipse(px0, py0, 5, 5)
     # Drawing
@@ -271,7 +272,8 @@ def arc_augmented_poly(op_list,
     assert len(op_list) == len(r2_list), \
         "Number of points and radii not the same"
     if check_intersection and arc_func:
-        warn("check_intersection mode overrides arc_func! Don't use them together.")
+        warn(
+            "check_intersection mode overrides arc_func! Don't use them together.")
     if check_intersection:
         global _points, vertex_func
         _points = []
@@ -348,7 +350,7 @@ def arc_augmented_poly(op_list,
                 arc_func(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2,
                          **kwargs)
             if DEBUG:
-                textSize(width / 30)
+                textSize(height / 30)
                 text(str(int(degrees(start - a2))), p2[0], p2[1])
         else:
             # when the the segment is smaller than the diference between
