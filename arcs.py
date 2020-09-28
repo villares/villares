@@ -23,13 +23,9 @@ ROTATION = {0: 0,
             3: PI + HALF_PI,
             RIGHT: PI + HALF_PI,
             BOTTOM + RIGHT: 0,
-            DOWN + RIGHT: 0,
-            DOWN + LEFT: HALF_PI,
             BOTTOM + LEFT: HALF_PI,
             TOP + LEFT: PI,
-            UP + LEFT: PI,
             TOP + RIGHT: PI + HALF_PI,
-            UP + RIGHT: PI + HALF_PI,
             }
 
 def circle_arc(x, y, radius, start_ang, sweep_ang, *args, **kwargs):
