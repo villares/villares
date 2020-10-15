@@ -27,7 +27,7 @@ class Line():
         return Line(a, b)
 
     def intersect(self, other):
-        return line_instersect(self, other)
+        return line_intersect(self, other)
 
     def point_over(self, x, y, TOLERANCE):
         return point_over_line(x, y,
@@ -41,7 +41,7 @@ class Line():
                                    self[1][0], self[1][1],
                                    TOLERANCE)
 
-def line_instersect(line_a, line_b):
+def line_intersect(line_a, line_b):
     """
     code adapted from Bernardo Fontes 
     https://github.com/berinhard/sketches/
