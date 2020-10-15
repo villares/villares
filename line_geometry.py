@@ -7,8 +7,6 @@ From github.com/villares/villares/line_geometry.py
 
 class Line():
 
-    TOLERANCE = EPSILON
-
     def __init__(self, a, b):
         self.a = PVector(*a)
         self.b = PVector(*b)
@@ -29,17 +27,17 @@ class Line():
     def intersect(self, other):
         return line_intersect(self, other)
 
-    def point_over(self, x, y, TOLERANCE):
+    def point_over(self, x, y, tolerance=0.1):
         return point_over_line(x, y,
                                self[0][0], self[0][1],
                                self[1][0], self[1][1],
-                               TOLERANCE)
+                               tolerance)
 
-    def point_colinear(self, x, y, TOLERANCE):
+    def point_colinear(self, x, y, tolerance=EPSILON):
         return points_are_colinear(x, y,
                                    self[0][0], self[0][1],
                                    self[1][0], self[1][1],
-                                   TOLERANCE)
+                                   tolerance)
 
 def line_intersect(line_a, line_b):
     """
@@ -64,7 +62,7 @@ def line_intersect(line_a, line_b):
     return PVector(x, y)
 
 def point_over_line(px, py, lax, lay, lbx, lby,
-                    tolerance=EPSILON):
+                    tolerance=0.1):
     """
     Check if point is over line using the sum of
     the distances from the point to the line ends
@@ -73,7 +71,7 @@ def point_over_line(px, py, lax, lay, lbx, lby,
     ab = dist(lax, lay, lbx, lby)
     pa = dist(lax, lay, px, py)
     pb = dist(px, py, lbx, lby)
-    return (pa + pb) <= ab + tolerance / 100.0
+    return (pa + pb) <= ab + tolerance
 
 def points_are_colinear(ax, ay, bx, by, cx, cy,
                         tolerance=EPSILON):
