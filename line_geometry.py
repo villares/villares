@@ -3,8 +3,8 @@
 From github.com/villares/villares/line_geometry.py
 
 2020-09-25
-2020-10-15 Fixed line_instersection Typo & removed TOLERANCE const
-2020-10-17 Added point_in_screen()
+2020-10-15 Fixed line_instersection typo, added dist() & removed TOLERANCE
+2020-10-17 Added point_in_screen(), renamed poly() -> draw_poly()
 """
 
 class Line():
@@ -109,7 +109,7 @@ def triangle_area(a, b, c):
 #     draw = poly        
             
 
-def poly(points, holes=None, closed=True):
+def draw_poly(points, holes=None, closed=True):
     """
     Aceita como pontos sequencias de tuplas, lista ou vetores com (x, y) ou (x, y, z).
     Note que `holes` espera uma sequencias de sequencias ou uma única sequencia de
@@ -151,6 +151,8 @@ def poly(points, holes=None, closed=True):
         endShape(CLOSE)
     else:
         endShape()
+
+poly = draw_poly
 
 def edges(poly_points):
     return pairwise(poly_points) + [(poly_points[-1], poly_points[0])]
