@@ -3,6 +3,8 @@
 From github.com/villares/villares/line_geometry.py
 
 2020-09-25
+2020-10-15 Fixed line_instersection Typo & removed TOLERANCE const
+2020-10-17 Added point_in_screen()
 """
 
 class Line():
