@@ -14,6 +14,9 @@ class Line():
     def __getitem__(self, i):
         return (self.a, self.b)[i]
 
+    def dist(self):
+        return PVector.dist(self.a, self.b)
+
     def plot(self):
         line(self.a.x, self.a.y, self.b.x, self.b.y)
 
@@ -27,11 +30,13 @@ class Line():
     def intersect(self, other):
         return line_intersect(self, other)
 
-    def point_over(self, x, y, tolerance=0.1):
+    def contains_point(self, x, y, tolerance=0.1):
         return point_over_line(x, y,
                                self[0][0], self[0][1],
                                self[1][0], self[1][1],
                                tolerance)
+
+    point_over = contains_point
 
     def point_colinear(self, x, y, tolerance=EPSILON):
         return points_are_colinear(x, y,
