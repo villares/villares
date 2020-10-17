@@ -259,3 +259,6 @@ def inter_lines(L, poly_points):
                 inter_lines.append(Line(PVector(a.x, a.y),
                                         PVector(b.x, b.y)))
     return inter_lines
+
+def point_in_screen(p):
+    return 0 <= p[0] <= width and 0 <= p[1] <= height
