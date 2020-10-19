@@ -3,8 +3,9 @@
 From github.com/villares/villares/line_geometry.py
 
 2020-09-25
-2020-10-15 Fixed line_instersection typo, added dist() & removed TOLERANCE
+2020-10-15 Fixed "line_instersection" typo, added dist() & removed TOLERANCE
 2020-10-17 Added point_in_screen(), renamed poly() -> draw_poly()
+2020-10-19 Fixed line_intersection typo, again :/
 """
 
 class Line():
@@ -216,7 +217,7 @@ def is_poly_self_intersecting(poly_points):
         for c, d in ed[2::]:
         # test only non consecutive edges
             if (a != c) and (b != c) and (a != d):
-                if line_instersect(Line(a, b), Line(c, d)):
+                if line_intersect(Line(a, b), Line(c, d)):
                     intersect = True
                     break
     return intersect
@@ -240,7 +241,7 @@ def point_inside_poly(x, y, poly_points):
 
     for v in v_lines:
         for h in h_lines:
-            if line_instersect(v, h):
+            if line_intersect(v, h):
                 return True
 
     return False
@@ -249,7 +250,7 @@ def point_inside_poly(x, y, poly_points):
 def inter_lines(L, poly_points):
     inter_points = []
     for a, b in edges(poly_points):
-        inter = line_instersect(Line(a, b), L)
+        inter = line_intersect(Line(a, b), L)
         if inter:
             inter_points.append(inter)
     if not inter_points:
