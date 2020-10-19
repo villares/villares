@@ -5,8 +5,9 @@ From github.com/villares/villares/line_geometry.py
 2020-09-25
 2020-10-15 Fixed "line_instersection" typo, added dist() & removed TOLERANCE
 2020-10-17 Added point_in_screen(), renamed poly() -> draw_poly()
-2020-10-19 Fixed line_intersection typo, again :/
+2020-10-19 Fixed line_intersection typo, again :/, cleaned up stuff
 """
+from __future__ import division
 
 class Line():
 
@@ -100,15 +101,15 @@ def triangle_area(a, b, c):
 
 #     def __init__(iterable):
 #         self.__points = [p for p in iterable]
-    
+
 #     def __iter__(self):
 #         return iter(self.__points)
-    
+
 #     def plot(self):
-#         poly(self)
-        
-#     draw = poly        
-            
+#         poly(self.__points)
+
+#     draw = poly
+
 
 def draw_poly(points, holes=None, closed=True):
     """
@@ -135,7 +136,7 @@ def draw_poly(points, holes=None, closed=True):
             vertex(p[0], p[1])
         else:
             vertex(*p)  # desempacota pontos em 3d
-    # tratamento dos furos, se houver           
+    # tratamento dos furos, se houver
     holes = holes or []  # equivale a: holes if holes else []
     if holes and depth(holes) == 2:  # sequência única de pontos
         holes = (holes,)     # envolve em um tupla
@@ -155,22 +156,25 @@ def draw_poly(points, holes=None, closed=True):
 
 poly = draw_poly
 
+def edges_as_sets(poly_points):
+    """
+    Return a frozenset of poly edges as frozensets of 2 points.
+    """
+    return frozenset(frozenset(edge) for edge in edges(poly_points))
+
 def edges(poly_points):
+    """
+    Return a list of edges (tuples containing pairs of points)
+    for a list of points that represent a closed polygon
+    """
     return pairwise(poly_points) + [(poly_points[-1], poly_points[0])]
 
 def pairwise(iterable):
-    import itertools
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b = itertools.tee(iterable)
+    from itertools import tee
+    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    a, b = tee(iterable)
     next(b, None)
     return zip(a, b)
-
-def edges_as_sets(poly_points):
-    edge_set_pairs = set()
-    for edge in edges(poly_points):
-        s = frozenset(edge)
-        edge_set_pairs.add(s)
-    return frozenset(edge_set_pairs)
 
 
 def min_max(points):
