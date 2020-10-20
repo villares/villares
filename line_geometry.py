@@ -5,7 +5,7 @@ From github.com/villares/villares/line_geometry.py
 2020-09-25
 2020-10-15 Fixed "line_instersection" typo, added dist() & removed TOLERANCE
 2020-10-17 Added point_in_screen(), renamed poly() -> draw_poly()
-2020-10-19 Fixed line_intersection typo, again :/, cleaned up stuff
+2020-10-19 Fixed line_intersection typo, again :/, clean up, new point_inside_poly
 """
 from __future__ import division
 
@@ -227,28 +227,33 @@ def is_poly_self_intersecting(poly_points):
     return intersect
 
 def point_inside_poly(x, y, poly_points):
-    min_, max_ = min_max(poly_points)
-    if x < min_.x or y < min_.y or x > max_.x or y > max_.y:
-        return False
+    import sys
+    _huge = sys.float_info.max
+    _tiny = sys.float_info.min
+    p = (x, y)
+    intersect = False
+    for a, b in edges(poly_points):
+        if a[1] > b[1]:
+            a,b = b,a
+        if p[1] == a[1] or p[1] == b[1]:
+            p = (p[0], p[1] + EPSILON)
+        if (p[1] > b[1] or p[1] < a[1]) or (p[0] > max(a[0], b[0])):
+            continue
+        if p[0] < min(a[0], b[0]):
+            intersect = not intersect
+        else:
+            if abs(a[0] - b[0]) > _tiny:
+                m_red = (b[1] - a[1]) / float(b[0] - a[0])
+            else:
+                m_red = _huge
+            if abs(a[0] - p[0]) > _tiny:
+                m_blue = (p[1] - a[1]) / float(p[0] - a[0])
+            else:
+                m_blue = _huge
+            if m_blue >= m_red:
+                intersect = not intersect 
 
-    a = PVector(x, min_.y)
-    b = PVector(x, max_.y)
-    v_lines = inter_lines(Line(a, b), poly_points)
-    if not v_lines:
-        return False
-
-    a = PVector(min_.x, y)
-    b = PVector(max_.x, y)
-    h_lines = inter_lines(Line(a, b), poly_points)
-    if not h_lines:
-        return False
-
-    for v in v_lines:
-        for h in h_lines:
-            if line_intersect(v, h):
-                return True
-
-    return False
+    return intersect
 
 
 def inter_lines(L, poly_points):
