@@ -7,6 +7,7 @@ From github.com/villares/villares/arcs.py
 2020-09-25 Added bar() and var_bar()
 2020-09-26 Moved code from bar() to var_bar() and added several new kwargs
 2020-09-27 Revising arc_filleted_poly, added kwargs. Revised circle_arc and related functions
+2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
 """
 from warnings import warn
 from line_geometry import is_poly_self_intersecting, triangle_area
@@ -110,7 +111,7 @@ def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, **kwargs):
           mode=mode, **kwargs)
 
 def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
-          num_points=24, vertex_func=vertex):
+          num_points=24, vertex_func=None):
     """
     A poly approximation of an arc using the same
     signature as the original Processing arc().
@@ -118,6 +119,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
+    vertex_func = vertex_func or vertex
     sweep_angle = end_angle - start_angle
     if mode == 0:
         beginShape()
