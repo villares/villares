@@ -7,6 +7,8 @@ From github.com/villares/villares/line_geometry.py
 2020-10-17 Added point_in_screen(), renamed poly() -> draw_poly()
 2020-10-19 Fixed line_intersection typo, again :/, clean up, new point_inside_poly
 2020-11-13 set of edges non-frozen option
+2020-11-14 line_intersection now works with 2 tuples of 2 points, 4 points or 8 coords.
+
 """
 from __future__ import division
 
@@ -23,7 +25,7 @@ class Line():
         return PVector.dist(self.a, self.b)
 
     def plot(self):
-        line(self.a.x, self.a.y, self.b.x, self.b.y)
+        line(self[0][0], self[0][1], self[1][0], self[1][1])
 
     draw = plot
 
@@ -49,15 +51,28 @@ class Line():
                                    self[1][0], self[1][1],
                                    tolerance)
 
-def line_intersect(line_a, line_b):
+def line_intersect(*args):
     """
-    code adapted from Bernardo Fontes 
-    https://github.com/berinhard/sketches/
+    Adapted from Bernardo Fontes https://github.com/berinhard/sketches/
+    2020-11-14 does not assume Line objects anymore, and works with 4 points or 8 coords.
     """
-    x1, y1 = line_a.a.x, line_a.a.y
-    x2, y2 = line_a.b.x, line_a.b.y
-    x3, y3 = line_b.a.x, line_b.a.y
-    x4, y4 = line_b.b.x, line_b.b.y
+    if len(args) == 8:
+        x1, y1, x2, y2, x3, y3, x4, y3 = args
+        line_a = (x1, y1), (x2, y2)
+        line_b = (x3, y3), (x4, y4)    
+    else:    
+        if len(args) == 2:
+            line_a, line_b = args
+        elif len(args) == 4:
+            line_a = tuple(args[:2])
+            line_b = tuple(args[2:])
+        else:
+            raise ValueError, "line_intersect requires 2 lines, 4 points or 8 coords."
+        x1, y1 = line_a[0][0], line_a[0][1]
+        x2, y2 = line_a[1][0], line_a[1][1]
+        x3, y3 = line_b[0][0], line_b[0][1]
+        x4, y4 = line_b[1][0], line_b[1][1]
+        
     try:
         uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / \
             ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
@@ -67,8 +82,8 @@ def line_intersect(line_a, line_b):
         return
     if not(0 <= uA <= 1 and 0 <= uB <= 1):
         return
-    x = line_a.a.x + uA * (line_a.b.x - line_a.a.x)
-    y = line_a.a.y + uA * (line_a.b.y - line_a.a.y)
+    x = line_a[0][0] + uA * (line_a[1][0] - line_a[0][0])
+    y = line_a[0][1] + uA * (line_a[1][1] - line_a[0][1])
     return PVector(x, y)
 
 def point_over_line(px, py, lax, lay, lbx, lby,
