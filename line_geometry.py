@@ -6,6 +6,7 @@ From github.com/villares/villares/line_geometry.py
 2020-10-15 Fixed "line_instersection" typo, added dist() & removed TOLERANCE
 2020-10-17 Added point_in_screen(), renamed poly() -> draw_poly()
 2020-10-19 Fixed line_intersection typo, again :/, clean up, new point_inside_poly
+2020-11-13 set of edges non-frozen option
 """
 from __future__ import division
 
@@ -156,11 +157,14 @@ def draw_poly(points, holes=None, closed=True):
 
 poly = draw_poly
 
-def edges_as_sets(poly_points):
+def edges_as_sets(poly_points, frozen=True):
     """
     Return a frozenset of poly edges as frozensets of 2 points.
     """
-    return frozenset(frozenset(edge) for edge in edges(poly_points))
+    if frozen:
+        return frozenset(frozenset(edge) for edge in edges(poly_points))
+    else:
+        return set(frozenset(edge) for edge in edges(poly_points))
 
 def edges(poly_points):
     """
