@@ -15,14 +15,14 @@ from __future__ import division
 class Line():
 
     def __init__(self, a, b):
-        self.a = PVector(*a)
-        self.b = PVector(*b)
+        self.start = PVector(*a)
+        self.end = PVector(*b)
 
     def __getitem__(self, i):
-        return (self.a, self.b)[i]
+        return (self.start, self.end)[i]
 
     def dist(self):
-        return PVector.dist(self.a, self.b)
+        return PVector.dist(self.start, self.end)
 
     def plot(self):
         line(self[0][0], self[0][1], self[1][0], self[1][1])
@@ -33,7 +33,13 @@ class Line():
         a = PVector.lerp(self.a, other.a, t)
         b = PVector.lerp(self.b, other.b, t)
         return Line(a, b)
-
+    
+    def line_point(self, t):
+        return PVector.lerp(self[0], self[1], t)
+    
+    def midpoint(self):
+        return PVector.lerp(self[0], self[1], 0.5)
+    
     def intersect(self, other):
         return line_intersect(self, other)
 
@@ -50,6 +56,8 @@ class Line():
                                    self[0][0], self[0][1],
                                    self[1][0], self[1][1],
                                    tolerance)
+        
+        
 
 def line_intersect(*args):
     """
