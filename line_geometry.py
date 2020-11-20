@@ -8,7 +8,7 @@ From github.com/villares/villares/line_geometry.py
 2020-10-19 Fixed line_intersection typo, again :/, clean up, new point_inside_poly
 2020-11-13 set of edges non-frozen option
 2020-11-14 line_intersection now works with 2 tuples of 2 points, 4 points or 8 coords.
-
+2020-11-14 Line now accepts 1, 2 and 4 arguments; line_instance.draw() returns self
 """
 from __future__ import division
 
