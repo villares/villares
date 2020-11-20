@@ -14,9 +14,16 @@ from __future__ import division
 
 class Line():
 
-    def __init__(self, a, b):
-        self.start = PVector(*a)
-        self.end = PVector(*b)
+    def __init__(self, *args):
+        if len(args) == 1:
+            self.start = PVector(*args[0][0])
+            self.start = PVector(*args[0][1])
+        elif len(args) == 2:
+            self.start = PVector(*args[0])
+            self.end = PVector(*args[1])
+        elif len(args) == 4:
+            self.start = PVector(args[0], args[1])
+            self.end = PVector(args[2], args[3])
 
     def __getitem__(self, i):
         return (self.start, self.end)[i]
@@ -26,6 +33,7 @@ class Line():
 
     def plot(self):
         line(self[0][0], self[0][1], self[1][0], self[1][1])
+        return self
 
     draw = plot
 
@@ -33,13 +41,13 @@ class Line():
         a = PVector.lerp(self.a, other.a, t)
         b = PVector.lerp(self.b, other.b, t)
         return Line(a, b)
-    
+
     def line_point(self, t):
         return PVector.lerp(self[0], self[1], t)
-    
+
     def midpoint(self):
         return PVector.lerp(self[0], self[1], 0.5)
-    
+
     def intersect(self, other):
         return line_intersect(self, other)
 
@@ -56,8 +64,6 @@ class Line():
                                    self[0][0], self[0][1],
                                    self[1][0], self[1][1],
                                    tolerance)
-        
-        
 
 def line_intersect(*args):
     """
@@ -67,8 +73,8 @@ def line_intersect(*args):
     if len(args) == 8:
         x1, y1, x2, y2, x3, y3, x4, y3 = args
         line_a = (x1, y1), (x2, y2)
-        line_b = (x3, y3), (x4, y4)    
-    else:    
+        line_b = (x3, y3), (x4, y4)
+    else:
         if len(args) == 2:
             line_a, line_b = args
         elif len(args) == 4:
@@ -80,7 +86,7 @@ def line_intersect(*args):
         x2, y2 = line_a[1][0], line_a[1][1]
         x3, y3 = line_b[0][0], line_b[0][1]
         x4, y4 = line_b[1][0], line_b[1][1]
-        
+
     try:
         uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / \
             ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
@@ -182,7 +188,7 @@ poly = draw_poly
 
 def edges_as_sets(poly_points, frozen=True):
     """
-    Return a frozenset of poly edges as frozensets of 2 points.
+    Return a (frozen)set of poly edges as frozensets of 2 points.
     """
     if frozen:
         return frozenset(frozenset(edge) for edge in edges(poly_points))
@@ -261,7 +267,7 @@ def point_inside_poly(x, y, poly_points):
     intersect = False
     for a, b in edges(poly_points):
         if a[1] > b[1]:
-            a,b = b,a
+            a, b = b, a
         if p[1] == a[1] or p[1] == b[1]:
             p = (p[0], p[1] + EPSILON)
         if (p[1] > b[1] or p[1] < a[1]) or (p[0] > max(a[0], b[0])):
@@ -278,7 +284,7 @@ def point_inside_poly(x, y, poly_points):
             else:
                 m_blue = _huge
             if m_blue >= m_red:
-                intersect = not intersect 
+                intersect = not intersect
 
     return intersect
 
