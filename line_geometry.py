@@ -8,7 +8,8 @@ From github.com/villares/villares/line_geometry.py
 2020-10-19 Fixed line_intersection typo, again :/, clean up, new point_inside_poly
 2020-11-13 set of edges non-frozen option
 2020-11-14 line_intersection now works with 2 tuples of 2 points, 4 points or 8 coords.
-2020-11-14 Line now accepts 1, 2 and 4 arguments; line_instance.draw() returns self
+2020-11-20 Fixing Line that now accepts 1, 2 and 4 arguments; line_instance.draw() returns self
+2020-11-20 New min_max algorithm (also adding bounding_box alias)
 """
 from __future__ import division
 
@@ -17,13 +18,15 @@ class Line():
     def __init__(self, *args):
         if len(args) == 1:
             self.start = PVector(*args[0][0])
-            self.start = PVector(*args[0][1])
+            self.end = PVector(*args[0][1])
         elif len(args) == 2:
             self.start = PVector(*args[0])
             self.end = PVector(*args[1])
         elif len(args) == 4:
             self.start = PVector(args[0], args[1])
             self.end = PVector(args[2], args[3])
+        else:
+            raise ValueError, "Requires 1 Line-like object, a pair of points, or x1, y1, x2, y2 coords."
 
     def __getitem__(self, i):
         return (self.start, self.end)[i]
@@ -215,23 +218,11 @@ def min_max(points):
     Return two PVectors with the most extreme coordinates,
     resulting in "bounding box" corners.
     """
-    points = iter(points)
-    try:
-        p = points.next()
-        min_x, min_y = max_x, max_y = p[0], p[1]
-    except StopIteration:
-        raise ValueError, "min_max requires at least one point"
-    for p in points:
-        if p[0] < min_x:
-            min_x = p[0]
-        elif p[0] > max_x:
-            max_x = p[0]
-        if p[1] < min_y:
-            min_y = p[1]
-        elif p[1] > max_y:
-            max_y = p[1]
-    return (PVector(min_x, min_y),
-            PVector(max_x, max_y))
+    x_coordinates, y_coordinates = zip(*points)
+    return (PVector(min(x_coordinates), min(y_coordinates)),
+            PVector(max(x_coordinates), max(y_coordinates)))
+
+bounding_box = min_max
 
 def par_hatch(points, divisions, *sides):
     vectors = [PVector(p[0], p[1]) for p in points]
@@ -309,3 +300,37 @@ def inter_lines(L, poly_points):
 
 def point_in_screen(p):
     return 0 <= p[0] <= width and 0 <= p[1] <= height
+
+
+def hatch_rect(*args, **kwargs):
+    if len(args) == 2:
+        r, angle = args
+    else:
+        x, y, w, h, angle = args
+        r = rect_points(x, y, w, h, kwargs.get('mode', CORNER))
+    spacing = kwargs.get('spacing', 10)
+    d = dist(r[0][0], r[0][1], r[2][0], r[2][1])
+    cx = (r[0][0] + r[1][0]) / 2.0
+    cy = (r[1][1] + r[2][1]) / 2.0
+    num = int(d / spacing)
+    rr = [rotp(x, y, angle, cx, cy)
+          for x, y in rect_points(cx, cy, d, d, mode=CENTER)]
+    # stroke(255, 0, 0)   # debug mode
+    ab = Line(rr[0], rr[1])  # ;ab.plot()  # debug mode
+    cd = Line(rr[3], rr[2])  # ;cd.plot()  # debug mode
+    for i in range(num + 1):
+        abp = ab.line_point(i / float(num) + EPSILON)
+        cdp = cd.line_point(i / float(num) + EPSILON)
+        for hli in inter_lines(Line(abp, cdp), r):
+            hli.plot()
+
+def rect_points(x, y, w, h, mode=CORNER):
+    if mode == CENTER:
+        x, y = x - w / 2.0, y - h / 2.0
+    return [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
+
+def rotate_point(xp, yp, angle, x0=0, y0=0):
+    x, y = xp - x0, yp - y0  # translate to origin
+    rx = x0 + x * cos(angle) - y * sin(angle)
+    ry = y0 + y * cos(angle) + x * sin(angle)
+    return (rx, ry)
