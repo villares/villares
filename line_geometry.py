@@ -301,7 +301,6 @@ def inter_lines(L, poly_points):
 def point_in_screen(p):
     return 0 <= p[0] <= width and 0 <= p[1] <= height
 
-
 def hatch_rect(*args, **kwargs):
     if len(args) == 2:
         r, angle = args
