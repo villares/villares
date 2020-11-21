@@ -195,16 +195,18 @@ def edges_as_sets(poly_points, frozen=True):
     Return a (frozen)set of poly edges as frozensets of 2 points.
     """
     if frozen:
-        return frozenset(frozenset(edge) for edge in edges(poly_points))
+        return frozenset(frozenset(edge) for edge in poly_edges(poly_points))
     else:
-        return set(frozenset(edge) for edge in edges(poly_points))
+        return set(frozenset(edge) for edge in poly_edges(poly_points))
 
-def edges(poly_points):
+def poly_edges(poly_points):
     """
     Return a list of edges (tuples containing pairs of points)
     for a list of points that represent a closed polygon
     """
     return pairwise(poly_points) + [(poly_points[-1], poly_points[0])]
+
+edges = poly_edges
 
 def pairwise(iterable):
     from itertools import tee
@@ -212,7 +214,6 @@ def pairwise(iterable):
     a, b = tee(iterable)
     next(b, None)
     return zip(a, b)
-
 
 def min_max(points):
     """
@@ -280,10 +281,9 @@ def point_inside_poly(x, y, poly_points):
 
     return intersect
 
-
 def inter_lines(L, poly_points):
     inter_points = []
-    for a, b in edges(poly_points):
+    for a, b in poly_edges(poly_points):
         inter = line_intersect(Line(a, b), L)
         if inter:
             inter_points.append(inter)
