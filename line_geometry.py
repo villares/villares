@@ -10,6 +10,7 @@ From github.com/villares/villares/line_geometry.py
 2020-11-14 line_intersection now works with 2 tuples of 2 points, 4 points or 8 coords.
 2020-11-20 Fixing Line that now accepts 1, 2 and 4 arguments; line_instance.draw() returns self
 2020-11-20 New min_max algorithm (also adding bounding_box alias)
+2020-11-20 rect_points(), rotate_point(), hatch_rect(), hatch_poly()
 """
 from __future__ import division
 
@@ -321,6 +322,24 @@ def hatch_rect(*args, **kwargs):
         abp = ab.line_point(i / float(num) + EPSILON)
         cdp = cd.line_point(i / float(num) + EPSILON)
         for hli in inter_lines(Line(abp, cdp), r):
+            hli.plot()
+
+def hatch_poly(points, angle, **kwargs):
+    spacing = kwargs.get('spacing', 5)
+    bound = min_max(points)
+    diag = Line(bound)
+    d = diag.dist()
+    cx, cy, _  = diag.midpoint()
+    num = int(d / spacing)
+    rr = [rotate_point(x, y, angle, cx, cy)
+          for x, y in rect_points(cx, cy, d, d, mode=CENTER)]
+    # stroke(255, 0, 0)   # debug mode
+    ab = Line(rr[0], rr[1])  # ;ab.plot()  # debug mode
+    cd = Line(rr[3], rr[2])  # ;cd.plot()  # debug mode
+    for i in range(num + 1):
+        abp = ab.line_point(i / float(num) + EPSILON)
+        cdp = cd.line_point(i / float(num) + EPSILON)
+        for hli in inter_lines(Line(abp, cdp), points):
             hli.plot()
 
 def rect_points(x, y, w, h, mode=CORNER):
