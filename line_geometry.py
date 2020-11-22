@@ -11,6 +11,8 @@ From github.com/villares/villares/line_geometry.py
 2020-11-20 Fixing Line that now accepts 1, 2 and 4 arguments; line_instance.draw() returns self
 2020-11-20 New min_max algorithm (also adding bounding_box alias)
 2020-11-20 rect_points(), rotate_point(), hatch_rect(), hatch_poly()
+2020-11-22 Line .plot() method now accepts a custom drawing function. And so does hatch_poy().
+
 """
 from __future__ import division
 
@@ -35,8 +37,11 @@ class Line():
     def dist(self):
         return PVector.dist(self.start, self.end)
 
-    def plot(self):
-        line(self[0][0], self[0][1], self[1][0], self[1][1])
+    def plot(self, function=None, *args):
+        if not function:
+            line(self[0][0], self[0][1], self[1][0], self[1][1])
+        else:
+            function(self[0][0], self[0][1], self[1][0], self[1][1], *args)
         return self
 
     draw = plot
@@ -326,6 +331,8 @@ def hatch_rect(*args, **kwargs):
 
 def hatch_poly(points, angle, **kwargs):
     spacing = kwargs.get('spacing', 5)
+    function = kwargs.get('function', None)
+    args = kwargs.get('args', [])
     bound = min_max(points)
     diag = Line(bound)
     d = diag.dist()
@@ -339,8 +346,12 @@ def hatch_poly(points, angle, **kwargs):
     for i in range(num + 1):
         abp = ab.line_point(i / float(num) + EPSILON)
         cdp = cd.line_point(i / float(num) + EPSILON)
-        for hli in inter_lines(Line(abp, cdp), points):
-            hli.plot()
+        if not function:
+            for hli in inter_lines(Line(abp, cdp), points):
+                hli.plot()
+        else:
+            for hli in inter_lines(Line(abp, cdp), points):
+                hli.plot(function, *args)
 
 def rect_points(x, y, w, h, mode=CORNER):
     if mode == CENTER:
