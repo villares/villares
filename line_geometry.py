@@ -11,9 +11,10 @@ From github.com/villares/villares/line_geometry.py
 2020-11-20 Fixing Line that now accepts 1, 2 and 4 arguments; line_instance.draw() returns self
 2020-11-20 New min_max algorithm (also adding bounding_box alias)
 2020-11-20 rect_points(), rotate_point(), hatch_rect(), hatch_poly()
-2020-11-22 Line .plot() method now accepts a custom drawing function. And so does hatch_poy().
-
+2020-11-22 Line .plot() method now accepts a custom drawing function. And so does hatch_poly().
+2020-11-26 Line .plot() method to accept kwargs, added .as_PVector() as helper for Line objs.
 """
+
 from __future__ import division
 
 class Line():
@@ -37,11 +38,12 @@ class Line():
     def dist(self):
         return PVector.dist(self.start, self.end)
 
-    def plot(self, function=None, *args):
+    def plot(self, *args, **kwargs):
+        function = kwargs.pop('function', None)
         if not function:
             line(self[0][0], self[0][1], self[1][0], self[1][1])
         else:
-            function(self[0][0], self[0][1], self[1][0], self[1][1], *args)
+            function(self[0][0], self[0][1], self[1][0], self[1][1], *args, **kwargs)
         return self
 
     draw = plot
@@ -68,6 +70,9 @@ class Line():
 
     point_over = contains_point
 
+    def as_PVector(self):
+        return PVector(self[1][0], self[1][1]) - PVector(self[0][0], self[0][1]) 
+        
     def point_colinear(self, x, y, tolerance=EPSILON):
         return points_are_colinear(x, y,
                                    self[0][0], self[0][1],
