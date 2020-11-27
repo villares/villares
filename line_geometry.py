@@ -13,6 +13,7 @@ From github.com/villares/villares/line_geometry.py
 2020-11-20 rect_points(), rotate_point(), hatch_rect(), hatch_poly()
 2020-11-22 Line .plot() method now accepts a custom drawing function. And so does hatch_poly().
 2020-11-26 Line .plot() method to accept kwargs, added .as_PVector() as helper for Line objs.
+2020-11-26 hatch_rect() fix
 """
 
 from __future__ import division
@@ -43,7 +44,8 @@ class Line():
         if not function:
             line(self[0][0], self[0][1], self[1][0], self[1][1])
         else:
-            function(self[0][0], self[0][1], self[1][0], self[1][1], *args, **kwargs)
+            function(
+                self[0][0], self[0][1], self[1][0], self[1][1], *args, **kwargs)
         return self
 
     draw = plot
@@ -71,8 +73,8 @@ class Line():
     point_over = contains_point
 
     def as_PVector(self):
-        return PVector(self[1][0], self[1][1]) - PVector(self[0][0], self[0][1]) 
-        
+        return PVector(self[1][0], self[1][1]) - PVector(self[0][0], self[0][1])
+
     def point_colinear(self, x, y, tolerance=EPSILON):
         return points_are_colinear(x, y,
                                    self[0][0], self[0][1],
@@ -319,11 +321,13 @@ def hatch_rect(*args, **kwargs):
         x, y, w, h, angle = args
         r = rect_points(x, y, w, h, kwargs.get('mode', CORNER))
     spacing = kwargs.get('spacing', 10)
+    function = kwargs.pop('function', None)
+    base = kwargs.pop('base', False)
     d = dist(r[0][0], r[0][1], r[2][0], r[2][1])
     cx = (r[0][0] + r[1][0]) / 2.0
     cy = (r[1][1] + r[2][1]) / 2.0
     num = int(d / spacing)
-    rr = [rotp(x, y, angle, cx, cy)
+    rr = [rotate_point(x, y, angle, cx, cy)
           for x, y in rect_points(cx, cy, d, d, mode=CENTER)]
     # stroke(255, 0, 0)   # debug mode
     ab = Line(rr[0], rr[1])  # ;ab.plot()  # debug mode
@@ -331,17 +335,28 @@ def hatch_rect(*args, **kwargs):
     for i in range(num + 1):
         abp = ab.line_point(i / float(num) + EPSILON)
         cdp = cd.line_point(i / float(num) + EPSILON)
-        for hli in inter_lines(Line(abp, cdp), r):
-            hli.plot()
+        if not function:
+            for hli in inter_lines(Line(abp, cdp), r):
+                hli.plot()
+        else:
+            kwargs['function'] = function
+            if base == True:
+                # add back base kwarg as a line
+                kwargs['base_line'] = Line(abp, cdp)
+                for hli in inter_lines(Line(abp, cdp), r):
+                    hli.plot(**kwargs)
+            else:
+                for hli in inter_lines(Line(abp, cdp), r):
+                    hli.plot(**kwargs)
 
 def hatch_poly(points, angle, **kwargs):
     spacing = kwargs.get('spacing', 5)
-    function = kwargs.get('function', None)
-    args = kwargs.get('args', [])
+    function = kwargs.pop('function', None)
+    base = kwargs.pop('base', False)
     bound = min_max(points)
     diag = Line(bound)
     d = diag.dist()
-    cx, cy, _  = diag.midpoint()
+    cx, cy, _ = diag.midpoint()
     num = int(d / spacing)
     rr = [rotate_point(x, y, angle, cx, cy)
           for x, y in rect_points(cx, cy, d, d, mode=CENTER)]
@@ -355,8 +370,16 @@ def hatch_poly(points, angle, **kwargs):
             for hli in inter_lines(Line(abp, cdp), points):
                 hli.plot()
         else:
-            for hli in inter_lines(Line(abp, cdp), points):
-                hli.plot(function, *args)
+            kwargs['function'] = function
+            if base == True:
+                # add back base kwarg as a line
+                kwargs['base_line'] = Line(abp, cdp)
+                for hli in inter_lines(Line(abp, cdp), points):
+                    hli.plot(**kwargs)
+            else:
+                for hli in inter_lines(Line(abp, cdp), points):
+                    hli.plot(**kwargs)
+
 
 def rect_points(x, y, w, h, mode=CORNER):
     if mode == CENTER:
