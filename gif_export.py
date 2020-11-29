@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-gif_export.py - a GIF Animation export helper for Processing Python mode - v2020_06_01 
+gif_export.py - a GIF Animation export helper for Processing Python mode - v2020_11_29 
 Alexandre B A Villares http://abav.lugaralgum.com - Licensed under GPL v3
 Inspired by an example by Art Simon https://github.com/APCSPrinciples/AnimatedGIF/
 
@@ -28,7 +28,9 @@ def gif_export(GifMaker,             # gets a reference to the library
                delay=170,            # this is quick
                frames=0,             # 0 will stop only if 'e' key pressed
                transparent=None,     # set a transparent color
-               finish=False):        # force stop
+               finish=False,         # force stop
+               exit_on_finish=True   # quit on stop   
+		):       
     global gifExporter
     try:
         gifExporter
@@ -43,14 +45,13 @@ def gif_export(GifMaker,             # gets a reference to the library
 
     gifExporter.addFrame()
 
-    if frames == 0:
-       if keyPressed and key=='e':
-           finish = True
+    if frames == 0 and keyPressed and key=='e':
+        finish = True
     elif frameCount >= frames:
         finish = True
                 
     if finish:
         gifExporter.finish()
-        print("gif saved, exit")
-        exit()
-
+        print("gif saved")
+        if exit_on_finish:
+	          exit()
