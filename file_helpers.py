@@ -2,7 +2,8 @@
 
 # From github.com/villares/villares/file_helpers.py
 
-# 2020-9-25 Added comment with date and URL!
+# 2020-09-25 Added comment with date and URL!
+# 2010-11-28 Added sketch_name()
 
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
@@ -49,3 +50,9 @@ def imgext(file_name):
                  'tga',
                  )
     return ext.lower() in valid_ext
+
+def sketch_name():
+    """Return sketch name."""
+    from os import path
+    sketch = sketchPath()
+    return path.basename(sketch)
