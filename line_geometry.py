@@ -18,6 +18,16 @@ From github.com/villares/villares/line_geometry.py
 
 from __future__ import division
 
+def memoize(f):
+    memo = {}
+    def memoized_func(*args, **kwargs):
+        if args not in memo:
+            r = f(*args, **kwargs)
+            memo[args] = r
+            return r
+        return memo[args]
+    return memoized_func
+
 class Line():
 
     def __init__(self, *args):
@@ -49,7 +59,7 @@ class Line():
         return self
 
     draw = plot
-
+    
     def lerp(self, other, t):
         a = PVector.lerp(self.a, other.a, t)
         b = PVector.lerp(self.b, other.b, t)
@@ -116,6 +126,7 @@ def line_intersect(*args):
     y = line_a[0][1] + uA * (line_a[1][1] - line_a[0][1])
     return PVector(x, y)
 
+@memoize
 def point_over_line(px, py, lax, lay, lbx, lby,
                     tolerance=0.1):
     """
@@ -128,6 +139,7 @@ def point_over_line(px, py, lax, lay, lbx, lby,
     pb = dist(px, py, lbx, lby)
     return (pa + pb) <= ab + tolerance
 
+@memoize
 def points_are_colinear(ax, ay, bx, by, cx, cy,
                         tolerance=EPSILON):
     """
@@ -137,6 +149,7 @@ def points_are_colinear(ax, ay, bx, by, cx, cy,
     area = triangle_area((ax, ay), (bx, by), (cx, cy))
     return abs(area) < tolerance
 
+@memoize
 def triangle_area(a, b, c):
     area = (a[0] * (b[1] - c[1]) +
             b[0] * (c[1] - a[1]) +
@@ -227,6 +240,7 @@ def pairwise(iterable):
     next(b, None)
     return zip(a, b)
 
+@memoize
 def min_max(points):
     """
     Return two PVectors with the most extreme coordinates,
@@ -290,7 +304,6 @@ def point_inside_poly(x, y, poly_points):
                 m_blue = _huge
             if m_blue >= m_red:
                 intersect = not intersect
-
     return intersect
 
 def inter_lines(L, poly_points):
@@ -309,7 +322,7 @@ def inter_lines(L, poly_points):
             if b:
                 inter_lines.append(Line(PVector(a.x, a.y),
                                         PVector(b.x, b.y)))
-    return inter_lines
+    return tuple(inter_lines)
 
 def point_in_screen(p):
     return 0 <= p[0] <= width and 0 <= p[1] <= height
@@ -352,7 +365,7 @@ def hatch_rect(*args, **kwargs):
 def hatch_poly(points, angle, **kwargs):
     spacing = kwargs.get('spacing', 5)
     function = kwargs.pop('function', None)
-    base = kwargs.pop('base', False)
+    base = kwargs.pop('base', True)
     bound = min_max(points)
     diag = Line(bound)
     d = diag.dist()
@@ -380,12 +393,13 @@ def hatch_poly(points, angle, **kwargs):
                 for hli in inter_lines(Line(abp, cdp), points):
                     hli.plot(**kwargs)
 
-
+@memoize
 def rect_points(x, y, w, h, mode=CORNER):
     if mode == CENTER:
         x, y = x - w / 2.0, y - h / 2.0
     return [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
 
+@memoize
 def rotate_point(xp, yp, angle, x0=0, y0=0):
     x, y = xp - x0, yp - y0  # translate to origin
     rx = x0 + x * cos(angle) - y * sin(angle)
