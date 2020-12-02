@@ -43,13 +43,11 @@ class Line():
     def plot(self, *args, **kwargs):
         function = kwargs.pop('function', None)
         ps = kwargs.get('ps', None)
-
-        if not function:
-            if ps:
-                ps.addChild(createShape(LINE,
-                                        self[0][0], self[0][1],
-                                        self[1][0], self[1][1]))
-            else:
+        if not function and ps:
+            ps.addChild(createShape(LINE,
+                                    self[0][0], self[0][1],
+                                    self[1][0], self[1][1]))
+        elif not function:
                 line(self[0][0], self[0][1], self[1][0], self[1][1])
         else:
             function(self[0][0], self[0][1], self[1][0], self[1][1],
@@ -330,6 +328,8 @@ def hatch_rect(*args, **kwargs):
     spacing = kwargs.get('spacing', 10)
     function = kwargs.pop('function', None)
     base = kwargs.pop('base', False)
+    kwargs['ps'] = ps =  createShape(GROUP) if kwargs.get('ps', False) else False  
+
     d = dist(r[0][0], r[0][1], r[2][0], r[2][1])
     cx = (r[0][0] + r[1][0]) / 2.0
     cy = (r[1][1] + r[2][1]) / 2.0
