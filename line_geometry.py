@@ -18,6 +18,7 @@ From github.com/villares/villares/line_geometry.py
 
 from __future__ import division
 
+
 class Line():
 
     def __init__(self, *args):
@@ -41,11 +42,18 @@ class Line():
 
     def plot(self, *args, **kwargs):
         function = kwargs.pop('function', None)
+        ps = kwargs.get('ps', None)
+
         if not function:
-            line(self[0][0], self[0][1], self[1][0], self[1][1])
+            if ps:
+                ps.addChild(createShape(LINE,
+                                        self[0][0], self[0][1],
+                                        self[1][0], self[1][1]))
+            else:
+                line(self[0][0], self[0][1], self[1][0], self[1][1])
         else:
-            function(
-                self[0][0], self[0][1], self[1][0], self[1][1], *args, **kwargs)
+            function(self[0][0], self[0][1], self[1][0], self[1][1],
+                     *args, **kwargs)
         return self
 
     draw = plot
@@ -307,8 +315,7 @@ def inter_lines(L, poly_points):
         pairs = zip(inter_points[::2], inter_points[1::2])
         for a, b in pairs:
             if b:
-                inter_lines.append(Line(PVector(a.x, a.y),
-                                        PVector(b.x, b.y)))
+                inter_lines.append(Line(a, b))
     return inter_lines
 
 def point_in_screen(p):
@@ -351,7 +358,7 @@ def hatch_rect(*args, **kwargs):
 
 def hatch_poly(points, angle, **kwargs):
     spacing = kwargs.get('spacing', 5)
-    function = kwargs.pop('function', None)
+    function = kwargs.get('function', None)
     base = kwargs.pop('base', False)
     bound = min_max(points)
     diag = Line(bound)
@@ -366,19 +373,11 @@ def hatch_poly(points, angle, **kwargs):
     for i in range(num + 1):
         abp = ab.line_point(i / float(num) + EPSILON)
         cdp = cd.line_point(i / float(num) + EPSILON)
-        if not function:
-            for hli in inter_lines(Line(abp, cdp), points):
-                hli.plot()
-        else:
-            kwargs['function'] = function
-            if base == True:
-                # add back base kwarg as a line
-                kwargs['base_line'] = Line(abp, cdp)
-                for hli in inter_lines(Line(abp, cdp), points):
-                    hli.plot(**kwargs)
-            else:
-                for hli in inter_lines(Line(abp, cdp), points):
-                    hli.plot(**kwargs)
+        if base == True:
+            # add back base kwarg as a line
+            kwargs['base_line'] = Line(abp, cdp)
+        for hli in inter_lines(Line(abp, cdp), points):
+            hli.plot(**kwargs)
 
 
 def rect_points(x, y, w, h, mode=CORNER):
