@@ -13,8 +13,8 @@ From github.com/villares/villares/line_geometry.py
 2020-11-20 rect_points(), rotate_point(), hatch_rect(), hatch_poly()
 2020-11-22 Line .plot() method now accepts a custom drawing function. And so does hatch_poly().
 2020-11-26 Line .plot() method to accept kwargs, added .as_PVector() as helper for Line objs.
-2020-11-26 hatch_rect() fix
-2020-12-03 min_max() fix for PVector (x, y z), replaced point_inside_poly & reverted som hatch_poly()
+2020-12-02 min_max() fix for PVector (x, y z), replaced point_inside_poly & reverted some hatch_poly()
+2020-12-03 inter_lines() fix, removed hatch_rect(), updated hatcch_poly() <- still to be tested
 """
 
 from __future__ import division
@@ -289,20 +289,23 @@ def point_inside_poly(x, y, points):
             inside = not inside
     return inside
 
-def inter_lines(L, poly_points):
-    inter_points = []
+def inter_lines(given_line, poly_points):
+    inter_pts = []
     for a, b in poly_edges(poly_points):
-        inter = line_intersect(Line(a, b), L)
-        if inter:
-            inter_points.append(inter)
-    if not inter_points:
+        inter_pt = line_intersect(Line(a, b), given_line)
+        if inter_pt:
+            inter_pts.append(inter_pt)
+    if not inter_pts:
         return []
     inter_lines = []
-    if len(inter_points) > 1:
-        inter_points.sort()
-        pairs = zip(inter_points[::2], inter_points[1::2])
+    if len(inter_pts) > 1:
+        fptx, fpty = inter_pts[0][0], inter_pts[0][1]
+        first_pt_dist = lambda pt: ((pt[0] - fptx) ** 2 +
+                                    (pt[1] - fpty) ** 2)
+        inter_pts.sort(key=first_pt_dist)
+        pairs = zip(inter_pts[::2], inter_pts[1::2])
         for a, b in pairs:
-            if a and b:
+            if b:
                 inter_lines.append(Line(a, b))
     return inter_lines
 
@@ -311,51 +314,23 @@ def point_in_screen(p):
 
 def hatch_poly(*args, **kwargs):
     if len(args) == 2:
-        points, angle = args
-        d = dist(points[0][0], points[0][1], points[2][0], points[2][1]) + EPSILON
-        cx = (points[0][0] + points[1][0]) / 2.0
-        cy = (points[1][1] + points[2][1]) / 2.0
-    else:
-        x, y, w, h, angle = args
-        points = rect_points(x, y, w, h, kwargs.pop('mode', CORNER))
-        bound = min_max(points)
-        diag = Line(bound) 
-        d = diag.dist() + EPSILON
+        pts, angle = args
+        bound = min_max(pts)
+        diag = Line(bound)
+        d = diag.dist()
         cx, cy, _ = diag.midpoint()
-    spacing = kwargs.get('spacing', 5)
-    function = kwargs.get('function', None)
-    base = kwargs.pop('base', False)
-    bound = min_max(points)
-    diag = Line(bound)
-    d = diag.dist()
-    cx, cy, _ = diag.midpoint()
-    num = int(d / spacing)
-    rr = [rotate_point(x, y, angle, cx, cy)
-          for x, y in rect_points(cx, cy, d, d, mode=CENTER)]
-    # stroke(255, 0, 0)   # debug mode
-    ab = Line(rr[0], rr[1])  # ;ab.plot()  # debug mode
-    cd = Line(rr[3], rr[2])  # ;cd.plot()  # debug mode
-    for i in range(num + 1):
-        abp = ab.line_point(i / float(num) + EPSILON)
-        cdp = cd.line_point(i / float(num) + EPSILON)
-        if base == True:
-            # add back base kwarg as a line
-            kwargs['base_line'] = Line(abp, cdp)
-        for hli in inter_lines(Line(abp, cdp), points):
-            hli.plot(**kwargs)
-
-def hatch_rect(*args, **kwargs):
-    if len(args) == 2:
-        r, angle = args
     else:
         x, y, w, h, angle = args
-        r = rect_points(x, y, w, h, kwargs.get('mode', CORNER))
-    spacing = kwargs.get('spacing', 10)
+        pts = rect_points(x, y, w, h, kwargs.pop('mode', CORNER))
+        d = dist(pts[0][0], pts[0][1], pts[2][0], pts[2][1])
+        cx = (pts[0][0] + pts[1][0]) / 2.0
+        cy = (pts[1][1] + pts[2][1]) / 2.0
+    spacing = kwargs.get('spacing', 5)
     function = kwargs.pop('function', None)
-    base = kwargs.pop('base', False)
-    d = dist(r[0][0], r[0][1], r[2][0], r[2][1])
-    cx = (r[0][0] + r[1][0]) / 2.0
-    cy = (r[1][1] + r[2][1]) / 2.0
+    base = kwargs.pop('base', True)
+    odd_function = kwargs.pop('odd_function', False)
+    kwargs['ps'] = ps = (createShape(GROUP) if kwargs.get('ps', False)
+                         else False)
     num = int(d / spacing)
     rr = [rotate_point(x, y, angle, cx, cy)
           for x, y in rect_points(cx, cy, d, d, mode=CENTER)]
@@ -363,21 +338,21 @@ def hatch_rect(*args, **kwargs):
     ab = Line(rr[0], rr[1])  # ;ab.plot()  # debug mode
     cd = Line(rr[3], rr[2])  # ;cd.plot()  # debug mode
     for i in range(num + 1):
-        abp = ab.line_point(i / float(num) + EPSILON)
-        cdp = cd.line_point(i / float(num) + EPSILON)
-        if not function:
-            for hli in inter_lines(Line(abp, cdp), r):
-                hli.plot()
+        if odd_function is not False and i % 2:
+            kwargs['function'] = odd_function
         else:
             kwargs['function'] = function
-            if base == True:
-                # add back base kwarg as a line
-                kwargs['base_line'] = Line(abp, cdp)
-                for hli in inter_lines(Line(abp, cdp), r):
-                    hli.plot(**kwargs)
-            else:
-                for hli in inter_lines(Line(abp, cdp), r):
-                    hli.plot(**kwargs)
+        abp = ab.line_point(i / float(num))  # + EPSILON)
+        cdp = cd.line_point(i / float(num))  # + EPSILON)
+        if base == True:
+            kwargs['base_line'] = Line(abp, cdp)
+        inter_line_list = inter_lines(Line(abp, cdp), pts)
+        for hli in inter_line_list:
+            hli.plot(**kwargs)
+    return ps
+
+hatch_rect = hatch_poly
+
 
 def rect_points(x, y, w, h, mode=CORNER):
     if mode == CENTER:
