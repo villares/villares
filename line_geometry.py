@@ -18,7 +18,6 @@ From github.com/villares/villares/line_geometry.py
 
 from __future__ import division
 
-
 class Line():
 
     def __init__(self, *args):
@@ -48,7 +47,7 @@ class Line():
                                     self[0][0], self[0][1],
                                     self[1][0], self[1][1]))
         elif not function:
-                line(self[0][0], self[0][1], self[1][0], self[1][1])
+            line(self[0][0], self[0][1], self[1][0], self[1][1])
         else:
             function(self[0][0], self[0][1], self[1][0], self[1][1],
                      *args, **kwargs)
@@ -238,9 +237,14 @@ def min_max(points):
     Return two PVectors with the most extreme coordinates,
     resulting in "bounding box" corners.
     """
-    x_coordinates, y_coordinates = zip(*points)
-    return (PVector(min(x_coordinates), min(y_coordinates)),
-            PVector(max(x_coordinates), max(y_coordinates)))
+    if len(points[0]) == 2:
+        x_coordinates, y_coordinates = zip(*points)
+        return (PVector(min(x_coordinates), min(y_coordinates)),
+                PVector(max(x_coordinates), max(y_coordinates)))
+    else:
+        x_coordinates, y_coordinates, z_coordinates = zip(*points)
+        return (PVector(min(x_coordinates), min(y_coordinates), min(z_coordinates)),
+                PVector(max(x_coordinates), max(y_coordinates), max(z_coordinates)))
 
 bounding_box = min_max
 
@@ -328,7 +332,8 @@ def hatch_rect(*args, **kwargs):
     spacing = kwargs.get('spacing', 10)
     function = kwargs.pop('function', None)
     base = kwargs.pop('base', False)
-    kwargs['ps'] = ps =  createShape(GROUP) if kwargs.get('ps', False) else False  
+    kwargs['ps'] = ps = createShape(
+        GROUP) if kwargs.get('ps', False) else False
 
     d = dist(r[0][0], r[0][1], r[2][0], r[2][1])
     cx = (r[0][0] + r[1][0]) / 2.0

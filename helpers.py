@@ -3,7 +3,8 @@
 # From github.com/villares/villares/file_helpers.py
 
 # 2020-09-25 Added comment with date and URL!
-# 2010-11-28 Added sketch_name()
+# 2020-11-28 Added sketch_name()
+# 2020-12-02 Renamed file_helpers -> helpers, got grid() and color.py in
 
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
@@ -56,3 +57,33 @@ def sketch_name():
     from os import path
     sketch = sketchPath()
     return path.basename(sketch)
+
+
+def random_hue_saturated(bright=None):
+    bright = 255 if bright is None else bright
+    with pushStyle():
+        colorMode(HSB)
+        return color(random(256), 255, bright)
+        
+def grid(cols, rows, colSize=1, rowSize=1):
+    """
+    Returns an iterator that provides coordinate tuples. Example:
+    # for x, y in grid(10, 10, 12, 12):
+    #     rect(x, y, 10, 10)
+    """
+    rowRange = range(int(rows))
+    colRange = range(int(cols))
+    for y in rowRange:
+        for x in colRange:
+            yield (x * colSize, y * rowSize)
+            
+def memoize(f):
+    """Naive memoization."""
+    memo = {}
+    def memoized_func(*args, **kwargs):
+        if args not in memo:
+            r = f(*args, **kwargs)
+            memo[args] = r
+            return r
+        return memo[args]
+    return memoized_func
