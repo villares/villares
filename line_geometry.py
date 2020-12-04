@@ -14,10 +14,12 @@ From github.com/villares/villares/line_geometry.py
 2020-11-22 Line .plot() method now accepts a custom drawing function. And so does hatch_poly().
 2020-11-26 Line .plot() method to accept kwargs, added .as_PVector() as helper for Line objs.
 2020-12-02 min_max() fix for PVector (x, y z), replaced point_inside_poly & reverted some hatch_poly()
-2020-12-03 inter_lines() fix, removed hatch_rect(), updated hatcch_poly() <- still to be tested
+2020-12-03 inter_lines() fix, removed hatch_rect(), updated hatch_poly() <- still to be tested
+2020-12-04 Draw_poly() change. Moved some functions to helper.py and now importing int all
 """
 
 from __future__ import division
+from helpers import triangle_area, rect_points, rotate_point
 
 class Line():
 
@@ -143,11 +145,6 @@ def points_are_colinear(ax, ay, bx, by, cx, cy,
     area = triangle_area((ax, ay), (bx, by), (cx, cy))
     return abs(area) < tolerance
 
-def triangle_area(a, b, c):
-    area = (a[0] * (b[1] - c[1]) +
-            b[0] * (c[1] - a[1]) +
-            c[0] * (a[1] - b[1]))
-    return area
 
 # class Poly():
 
@@ -183,10 +180,11 @@ def draw_poly(points, holes=None, closed=True):
             return 0
 
     beginShape()  # inicia o PShape
-    for p in points:
-        if len(p) == 2 or p[2] == 0:
+    if len(points[0]) == 2:
+        for p in points:
             vertex(p[0], p[1])
-        else:
+    else:
+        for p in points:
             vertex(*p)  # desempacota pontos em 3d
     # tratamento dos furos, se houver
     holes = holes or []  # equivale a: holes if holes else []
@@ -309,9 +307,6 @@ def inter_lines(given_line, poly_points):
                 inter_lines.append(Line(a, b))
     return inter_lines
 
-def point_in_screen(p):
-    return 0 <= p[0] <= width and 0 <= p[1] <= height
-
 def hatch_poly(*args, **kwargs):
     if len(args) == 2:
         pts, angle = args
@@ -352,15 +347,3 @@ def hatch_poly(*args, **kwargs):
     return ps
 
 hatch_rect = hatch_poly
-
-
-def rect_points(x, y, w, h, mode=CORNER):
-    if mode == CENTER:
-        x, y = x - w / 2.0, y - h / 2.0
-    return [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
-
-def rotate_point(xp, yp, angle, x0=0, y0=0):
-    x, y = xp - x0, yp - y0  # translate to origin
-    rx = x0 + x * cos(angle) - y * sin(angle)
-    ry = y0 + y * cos(angle) + x * sin(angle)
-    return (rx, ry)

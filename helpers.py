@@ -4,7 +4,8 @@
 
 # 2020-09-25 Added comment with date and URL!
 # 2020-11-28 Added sketch_name()
-# 2020-12-02 Renamed file_helpers -> helpers, got grid() and color.py in
+# 2020-12-02 Renamed file_helpers -> helpers, brought in grid() and color.py in
+# 2020-12-04 Brought in triangle_area, rect_points, rotate_point, point_in_screen
 
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
@@ -87,3 +88,46 @@ def memoize(f):
             return r
         return memo[args]
     return memoized_func
+
+def triangle_area(a, b, c):
+    area = (a[0] * (b[1] - c[1]) +
+            b[0] * (c[1] - a[1]) +
+            c[0] * (a[1] - b[1]))
+    return area
+
+def rect_points(ox, oy, w, h, mode=CORNER, angle=None):
+    if mode == CENTER:
+        x, y = ox - w / 2.0, oy - h / 2.0
+    else:
+        x, y = ox, oy
+    points = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
+    if angle is None:
+        return points
+    else:
+        return [rotate_point((x, y), angle, (ox, oy))
+                for x, y in points]
+
+def rotate_point(*args):
+    if len(args) == 2:
+        (xp, yp), angle = args
+        x0, y0 = 0, 0
+    if len(args) == 3:
+        try:
+            (xp, yp), angle, (x0, y0) = args
+        except TypeError:
+            xp, yp, angle = args
+            x0, y0 = 0, 0
+    if len(args) == 5:
+        xp, yp, angle, x0, y0 = args
+    x, y = xp - x0, yp - y0  # translate to origin
+    xr = x * cos(angle) - y * sin(angle)
+    yr = y * cos(angle) + x * sin(angle)
+    return (xr + x0, yr + y0)
+
+def point_in_screen(*args):
+    if len(args) == 1:
+        x, y = args[0][0], args[0][1]
+    else:
+        x, y = args[0], args[1]
+    return 0 <= screenX(x, y) <= width and 0 <= screenY(x, y) <= height
+    
