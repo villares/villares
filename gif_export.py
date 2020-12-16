@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-gif_export.py - a GIF Animation export helper for Processing Python mode - v2020_11_29 
+gif_export.py - a GIF Animation export helper for Processing Python mode - v2020_12_16 
 Alexandre B A Villares http://abav.lugaralgum.com - Licensed under GPL v3
 Inspired by an example by Art Simon https://github.com/APCSPrinciples/AnimatedGIF/
 
@@ -26,11 +26,11 @@ def gif_export(GifMaker,             # gets a reference to the library
                repeat=0,             # 0 makes it an "endless" animation
                quality=100,          # quality range 0 - 255 test yourself,my guess is 0 best/high 255 worst/low
                delay=170,            # this is quick
-               frames=0,             # 0 will stop only if 'e' key pressed
                transparent=None,     # set a transparent color
-               finish=False,         # force stop
-               exit_on_finish=True   # quit on stop   
-		):       
+               frames=0,             # frames until stop, or 0 (default) won't stop unless 'e' key pressed OR...
+               finish=False,         # ...if we receive finish=True (stop now)
+               exit_on_finish=True   # Quits on stop, default is True       
+                   ):        
     global gifExporter
     try:
         gifExporter
@@ -45,8 +45,9 @@ def gif_export(GifMaker,             # gets a reference to the library
 
     gifExporter.addFrame()
 
-    if frames == 0 and keyPressed and key=='e':
-        finish = True
+    if frames == 0:
+        if keyPressed and key=='e':
+           finish = True
     elif frameCount >= frames:
         finish = True
                 
@@ -54,4 +55,4 @@ def gif_export(GifMaker,             # gets a reference to the library
         gifExporter.finish()
         print("gif saved")
         if exit_on_finish:
-	          exit()
+            exit()
