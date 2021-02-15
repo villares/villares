@@ -15,11 +15,9 @@ From github.com/villares/villares/line_geometry.py
 2020-11-26 Line .plot() method to accept kwargs, added .as_PVector() as helper for Line objs.
 2020-12-02 min_max() fix for PVector (x, y z), replaced point_inside_poly & reverted some hatch_poly()
 2020-12-03 inter_lines() fix, removed hatch_rect(), updated hatch_poly() <- still to be tested
-2020-12-04 Draw_poly() change. Moved some functions to helper.py and now importing int all
 """
 
 from __future__ import division
-from helpers import triangle_area, rect_points, rotate_point
 
 class Line():
 
@@ -39,6 +37,12 @@ class Line():
     def __getitem__(self, i):
         return (self.start, self.end)[i]
 
+    def __setitem__(self, i, v):
+        if i == 0:
+            self.start = v
+        elif i == 1:
+            self.end = v
+    
     def dist(self):
         return PVector.dist(self.start, self.end)
 
@@ -246,6 +250,49 @@ def min_max(points):
                 PVector(max(x_coordinates), max(y_coordinates), max(z_coordinates)))
 
 bounding_box = min_max
+
+def triangle_area(a, b, c):
+    area = (a[0] * (b[1] - c[1]) +
+            b[0] * (c[1] - a[1]) +
+            c[0] * (a[1] - b[1]))
+    return area
+
+def rect_points(ox, oy, w, h, mode=CORNER, angle=None):
+    if mode == CENTER:
+        x, y = ox - w / 2.0, oy - h / 2.0
+    else:
+        x, y = ox, oy
+    points = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
+    if angle is None:
+        return points
+    else:
+        return [rotate_point((x, y), angle, (ox, oy))
+                for x, y in points]
+
+def rotate_point(*args):
+    if len(args) == 2:
+        (xp, yp), angle = args
+        x0, y0 = 0, 0
+    if len(args) == 3:
+        try:
+            (xp, yp), angle, (x0, y0) = args
+        except TypeError:
+            xp, yp, angle = args
+            x0, y0 = 0, 0
+    if len(args) == 5:
+        xp, yp, angle, x0, y0 = args
+    x, y = xp - x0, yp - y0  # translate to origin
+    xr = x * cos(angle) - y * sin(angle)
+    yr = y * cos(angle) + x * sin(angle)
+    return (xr + x0, yr + y0)
+
+def point_in_screen(*args):
+    if len(args) == 1:
+        x, y = args[0][0], args[0][1]
+    else:
+        x, y = args[0], args[1]
+    return 0 <= screenX(x, y) <= width and 0 <= screenY(x, y) <= height
+    
 
 def par_hatch(points, divisions, *sides):
     vectors = [PVector(p[0], p[1]) for p in points]
