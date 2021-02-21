@@ -15,6 +15,7 @@ From github.com/villares/villares/line_geometry.py
 2020-11-26 Line .plot() method to accept kwargs, added .as_PVector() as helper for Line objs.
 2020-12-02 min_max() fix for PVector (x, y z), replaced point_inside_poly & reverted some hatch_poly()
 2020-12-03 inter_lines() fix, removed hatch_rect(), updated hatch_poly() <- still to be tested
+2021_02_21 Simplify is_poly_self_intersecting()
 """
 
 from __future__ import division
@@ -310,15 +311,13 @@ def par_hatch(points, divisions, *sides):
 
 def is_poly_self_intersecting(poly_points):
     ed = edges(poly_points)
-    intersect = False
     for a, b in ed[::-1]:
         for c, d in ed[2::]:
-        # test only non consecutive edges
+            # test only non consecutive edges
             if (a != c) and (b != c) and (a != d):
                 if line_intersect(Line(a, b), Line(c, d)):
-                    intersect = True
-                    break
-    return intersect
+                    return True
+    return False
 
 def point_inside_poly(x, y, points):
     # ray-casting algorithm based on
