@@ -7,6 +7,7 @@
 # 2020-12-02 Renamed file_helpers -> helpers, brought in grid() and color.py in
 # 2020-12-04 Brought in triangle_area, rect_points, rotate_point, point_in_screen
 # 2021-01_26 Reverted 2020-12-04
+# 2021_03_05 imgext() -> has_img_ext()
 
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
@@ -42,24 +43,19 @@ def lista_imagens(dir=None):
         return []
     return f_list
 
-def imgext(file_name):
-    ext = file_name.split('.')[-1]
-    # extensões dos formatos de imagem que o Processing aceita!
-    valid_ext = ('jpg',
-                 'png',
-                 'jpeg',
-                 'gif',
-                 'tif',
-                 'tga',
-                 )
-    return ext.lower() in valid_ext
+def has_image_ext(file_name):
+        # extensões dos formatos de imagem que o Processing aceita!
+        valid_ext = ('jpg', 'png', 'jpeg', 'gif', 'tif', 'tga')
+        file_ext = file_name.split('.')[-1]
+        return file_ext.lower() in valid_ext
+
+imgext = has_image_ext 
 
 def sketch_name():
     """Return sketch name."""
     from os import path
     sketch = sketchPath()
     return path.basename(sketch)
-
 
 def random_hue_saturated(bright=None):
     bright = 255 if bright is None else bright
