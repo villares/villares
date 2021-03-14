@@ -30,14 +30,14 @@ def lista_imagens(dir=None):
     """
     Devolve uma a lista de tuplas com os nomes dos arquivos de imagem e os caminhos
     completos para cada uma das images na pasta `dir` ou na pasta /data/ do sketch.
-    Requer a função imgext() para decidir quais extensões aceitar.
+    Requer a função has_image_ext() para decidir quais extensões aceitar.
     """
     from os import listdir
     from os.path import isfile, join
-    data_path = dir or sketchPath('data')
+    data_path = dir or sketchPath('data')  # will return error later if no data folder!
     try:
         f_list = [(f, join(data_path, f)) for f in listdir(data_path)
-                  if isfile(join(data_path, f)) and imgext(f)]
+                  if isfile(join(data_path, f)) and has_image_ext(f)]
     except Exception as e:
         print("Erro ({0}): {1}".format(e.errno, e.strerror))
         return []
