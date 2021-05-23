@@ -16,6 +16,7 @@ From github.com/villares/villares/line_geometry.py
 2020-12-02 min_max() fix for PVector (x, y z), replaced point_inside_poly & reverted some hatch_poly()
 2020-12-03 inter_lines() fix, removed hatch_rect(), updated hatch_poly() <- still to be tested
 2021_02_21 Simplify is_poly_self_intersecting()
+2021_04_26 poly_area()
 """
 
 from __future__ import division
@@ -258,6 +259,14 @@ def triangle_area(a, b, c):
             c[0] * (a[1] - b[1]))
     return area
 
+def poly_area(points):
+    points = list(points)
+    area = 0.0
+    for (ax, ay), (bx, by) in zip(points, points[1:] + [points[0]]):
+        area += ax * by
+        area -= bx * ay
+    return abs(area) / 2.0
+    
 def rect_points(ox, oy, w, h, mode=CORNER, angle=None):
     if mode == CENTER:
         x, y = ox - w / 2.0, oy - h / 2.0
