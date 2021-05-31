@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-From github.com/villares/villares/line_geometry.py
+From https://github.com/villares/villares/blob/master/line_geometry.py
 
 2020-09-25
 2020-10-15 Fixed "line_instersection" typo, added dist() & removed TOLERANCE
@@ -17,6 +17,7 @@ From github.com/villares/villares/line_geometry.py
 2020-12-03 inter_lines() fix, removed hatch_rect(), updated hatch_poly() <- still to be tested
 2021_02_21 Simplify is_poly_self_intersecting()
 2021_04_26 poly_area()
+2021_05_30 ccw() & simple_intersect() - modified is_poly_self_intersecting()
 """
 
 from __future__ import division
@@ -77,6 +78,9 @@ class Line():
 
     def intersect(self, other):
         return line_intersect(self, other)
+
+    def simple_intersect(self, other):
+        return simple_intersect(self, other)
 
     def contains_point(self, x, y, tolerance=0.1):
         return point_over_line(x, y,
@@ -324,7 +328,7 @@ def is_poly_self_intersecting(poly_points):
         for c, d in ed[2::]:
             # test only non consecutive edges
             if (a != c) and (b != c) and (a != d):
-                if line_intersect(Line(a, b), Line(c, d)):
+                if simple_intersect(a, b, c, d):
                     return True
     return False
 
@@ -343,6 +347,10 @@ def point_inside_poly(x, y, points):
     return inside
 
 def inter_lines(given_line, poly_points):
+    """ 
+    Line objects that indicate the complete overlap of a given line
+    and a polygon (provided as a collection og points)
+    """
     inter_pts = []
     for a, b in poly_edges(poly_points):
         inter_pt = line_intersect(Line(a, b), given_line)
@@ -361,6 +369,30 @@ def inter_lines(given_line, poly_points):
             if b:
                 inter_lines.append(Line(a, b))
     return inter_lines
+
+def ccw(*args):
+    """Returns True if the points are arranged counter-clockwise in the plane"""
+    if len(args) == 1:
+        a, b, c = args[0]
+    else:
+        a, b, c = args
+    return (b[0] - a[0]) * (c[1] - a[1]) > (b[1] - a[1]) * (c[0] - a[0])
+
+def simple_intersect(*args):
+    """Returns True if line segments intersect."""
+    if len(args) == 2:    
+        (a1, b1), (a2, b2) = args[0], args[1]
+    else:
+        a1, b1, a2, b2 = args
+    return ccw(a1, b1, a2) != ccw(a1, b1, b2) and ccw(a2, b2, a1) != ccw(a2, b2, b1)
+
+def is_poly_convex(poly_points):
+    for i, a in enumerate(poly_points):
+        b = poly_points[i - 1]
+        c = poly_points[i - 2]
+        if not ccw(a, b, c):
+            return False
+    return True
 
 def hatch_poly(*args, **kwargs):
     if len(args) == 2:
