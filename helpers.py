@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-# From github.com/villares/villares/file_helpers.py
+# From https://github.com/villares/villares/blob/main/file_helpers.py
 
 # 2020-09-25 Added comment with date and URL!
 # 2020-11-28 Added sketch_name()

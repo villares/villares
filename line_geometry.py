@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 """
-From https://github.com/villares/villares/blob/master/line_geometry.py
+From https://github.com/villares/villares/blob/main/line_geometry.py
 
 2020-09-25
 2020-10-15 Fixed "line_instersection" typo, added dist() & removed TOLERANCE

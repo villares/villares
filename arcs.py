@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-From https://github.com/villares/villares/blob/master/arcs.py
+From https://github.com/villares/villares/blob/main/arcs.py
 
 2020-09-22 Merges/renames several versions of the arc related functions
 2020-09-24 Updates arc_filleted_poly and arc_augmented_poly
