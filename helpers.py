@@ -8,6 +8,7 @@
 # 2020-12-04 Brought in triangle_area, rect_points, rotate_point, point_in_screen
 # 2021-01_26 Reverted 2020-12-04
 # 2021_03_05 imgext() -> has_img_ext()
+# 2021_06_08 added lerp_tuple()
 
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
@@ -87,7 +88,12 @@ def grid(cols, rows, colSize=1, rowSize=1):
     for y in rowRange:
         for x in colRange:
             yield (x * colSize, y * rowSize)
-            
+
+def lerp_tuple(a, b, t):   
+    return tuple(lerp_tuple(ca, cb, t) if isinstance(ca, tuple)
+                 else lerp(ca, cb, t)             
+                 for ca, cb in zip(a, b))
+                                    
 def memoize(f):
     """Naive memoization."""
     memo = {}
