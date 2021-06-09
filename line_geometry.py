@@ -13,12 +13,12 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2020-11-20 rect_points(), rotate_point(), hatch_rect(), hatch_poly()
 2020-11-22 Line .plot() method now accepts a custom drawing function. And so does hatch_poly().
 2020-11-26 Line .plot() method to accept kwargs, added .as_PVector() as helper for Line objs.
-2020-12-02 min_max() fix for PVector (x, y z), replaced point_inside_poly & reverted some hatch_poly()
+2020-12-02 min_max() fix for PVector (x, y, z), replaced point_inside_poly & reverted some hatch_poly()
 2020-12-03 inter_lines() fix, removed hatch_rect(), updated hatch_poly() <- still to be tested
 2021_02_21 Simplify is_poly_self_intersecting()
 2021_04_26 poly_area()
 2021_05_30 ccw() & simple_intersect() - modified is_poly_self_intersecting()
-2021_06_08 Removing PVectors all around - new min_max()
+2021_06_08 Removing PVectors all around, simplified min_max(points), added corner_angle(corner, a, b)
 """
 
 from __future__ import division
@@ -408,6 +408,11 @@ def is_poly_convex(poly_points):
             return False
     return True
 
+def corner_angle(corner, a, b):
+    ac = atan2(a[1] - corner[1], a[0] - corner[0])
+    bc = atan2(b[1] - corner[1], b[0] - corner[0])
+    return abs(ac - bc)           
+  
 def hatch_poly(*args, **kwargs):
     if len(args) == 2:
         pts, angle = args
