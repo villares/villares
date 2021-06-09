@@ -18,22 +18,24 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_02_21 Simplify is_poly_self_intersecting()
 2021_04_26 poly_area()
 2021_05_30 ccw() & simple_intersect() - modified is_poly_self_intersecting()
+2021_06_08 Removing PVectors all around - new min_max()
 """
 
 from __future__ import division
+from helpers import lerp_tuple
 
 class Line():
 
     def __init__(self, *args):
         if len(args) == 1:
-            self.start = PVector(*args[0][0])
-            self.end = PVector(*args[0][1])
+            self.start = tuple(args[0][0])
+            self.end = tuple(args[0][1])
         elif len(args) == 2:
-            self.start = PVector(*args[0])
-            self.end = PVector(*args[1])
+            self.start = tuple(args[0])
+            self.end = tuple(args[1])
         elif len(args) == 4:
-            self.start = PVector(args[0], args[1])
-            self.end = PVector(args[2], args[3])
+            self.start = tuple(args[0:2])
+            self.end = tuple(args[2:4])
         else:
             raise ValueError, "Requires 1 Line-like object, a pair of points, or x1, y1, x2, y2 coords."
 
@@ -47,7 +49,7 @@ class Line():
             self.end = v
     
     def dist(self):
-        return PVector.dist(self.start, self.end)
+        return dist(self.start[0], self.start[1], self.end[0], self.end[1])
 
     def plot(self, *args, **kwargs):
         function = kwargs.pop('function', None)
@@ -57,7 +59,8 @@ class Line():
                                     self[0][0], self[0][1],
                                     self[1][0], self[1][1]))
         elif not function:
-            line(self[0][0], self[0][1], self[1][0], self[1][1])
+            line(*(self.start + self.end))  # might make 3D lines (invisible if not in P3D)
+            # line(self[0][0], self[0][1], self[1][0], self[1][1])
         else:
             function(self[0][0], self[0][1], self[1][0], self[1][1],
                      *args, **kwargs)
@@ -66,15 +69,15 @@ class Line():
     draw = plot
 
     def lerp(self, other, t):
-        a = PVector.lerp(self.a, other.a, t)
-        b = PVector.lerp(self.b, other.b, t)
+        a = lerp_tuple(self.start, other.start, t)
+        b = lerp_tuple(self.end, other.end, t)
         return Line(a, b)
 
     def line_point(self, t):
-        return PVector.lerp(self[0], self[1], t)
+        return lerp_tuple(self.start, self.end, t)
 
     def midpoint(self):
-        return PVector.lerp(self[0], self[1], 0.5)
+        return lerp_tuple(self.start, self.end, 0.5)
 
     def intersect(self, other):
         return line_intersect(self, other)
@@ -99,11 +102,12 @@ class Line():
                                    self[1][0], self[1][1],
                                    tolerance)
 
-def line_intersect(*args):
+def line_intersect(*args, **kwargs):
     """
     Adapted from Bernardo Fontes https://github.com/berinhard/sketches/
     2020-11-14 does not assume Line objects anymore, and works with 4 points or 8 coords.
     """
+    as_PVector = kwargs.get('as_PVector', False)
     if len(args) == 8:
         x1, y1, x2, y2, x3, y3, x4, y3 = args
         line_a = (x1, y1), (x2, y2)
@@ -132,7 +136,10 @@ def line_intersect(*args):
         return
     x = line_a[0][0] + uA * (line_a[1][0] - line_a[0][0])
     y = line_a[0][1] + uA * (line_a[1][1] - line_a[0][1])
-    return PVector(x, y)
+    if as_PVector:
+        return PVector(x, y)
+    else:
+        return (x, y)
 
 def point_over_line(px, py, lax, lay, lbx, lby,
                     tolerance=0.1):
@@ -190,13 +197,13 @@ def draw_poly(points, holes=None, closed=True):
             return 0
 
     beginShape()  # inicia o PShape
-    if len(points[0]) == 2:
+    if len(tuple(points[0])) == 2:
         for p in points:
             vertex(p[0], p[1])
     else:
         for p in points:
             vertex(*p)  # desempacota pontos em 3d
-    # tratamento dos furos, se houver
+
     holes = holes or []  # equivale a: holes if holes else []
     if holes and depth(holes) == 2:  # sequência única de pontos
         holes = (holes,)     # envolve em um tupla
@@ -243,17 +250,14 @@ def pairwise(iterable):
 
 def min_max(points):
     """
-    Return two PVectors with the most extreme coordinates,
+    Return two tuples or PVectors with the most extreme coordinates,
     resulting in "bounding box" corners.
     """
-    if len(points[0]) == 2:
-        x_coordinates, y_coordinates = zip(*points)
-        return (PVector(min(x_coordinates), min(y_coordinates)),
-                PVector(max(x_coordinates), max(y_coordinates)))
+    coords = zip(*points)
+    if isinstance(points[0], PVector):
+        return PVector(*map(min, coords)), PVector(*map(max, coords))
     else:
-        x_coordinates, y_coordinates, z_coordinates = zip(*points)
-        return (PVector(min(x_coordinates), min(y_coordinates), min(z_coordinates)),
-                PVector(max(x_coordinates), max(y_coordinates), max(z_coordinates)))
+        return map(min, coords), map(max, coords)
 
 bounding_box = min_max
 
@@ -284,6 +288,12 @@ def rect_points(ox, oy, w, h, mode=CORNER, angle=None):
                 for x, y in points]
 
 def rotate_point(*args):
+    """
+    point (tuple/PVector), angle
+    x, y, angle (around 0, 0)
+    point (tuple/PVector), angle, center (tuple/PVector)
+    x, y, angle, x_center, y_center
+    """
     if len(args) == 2:
         (xp, yp), angle = args
         x0, y0 = 0, 0
@@ -298,6 +308,10 @@ def rotate_point(*args):
     x, y = xp - x0, yp - y0  # translate to origin
     xr = x * cos(angle) - y * sin(angle)
     yr = y * cos(angle) + x * sin(angle)
+    # if isinstance(args[0], PVector):                
+    #     return PVector(xr + x0, yr + y0)
+    # else:
+    #     return (xr + x0, yr + y0)
     return (xr + x0, yr + y0)
 
 def point_in_screen(*args):
@@ -309,16 +323,16 @@ def point_in_screen(*args):
     
 
 def par_hatch(points, divisions, *sides):
-    vectors = [PVector(p[0], p[1]) for p in points]
+    # points = [(p[0], p[1]) for p in points]
     lines = []
     if not sides:
         sides = [0]
     for s in sides:
-        a, b = vectors[-1 + s], vectors[+0 + s]
-        d, c = vectors[-2 + s], vectors[-3 + s]
+        a, b = points[-1 + s], points[+0 + s]
+        d, c = points[-2 + s], points[-3 + s]
         for i in range(1, divisions):
-            s0 = PVector.lerp(a, b, i / float(divisions))
-            s1 = PVector.lerp(d, c, i / float(divisions))
+            s0 = lerp_tuple(a, b, i / float(divisions))
+            s1 = lerp_tuple(d, c, i / float(divisions))
             lines.append(Line(s0, s1))
     return lines
 
