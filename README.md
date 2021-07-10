@@ -15,7 +15,7 @@
 ```python
 from collections import deque
 
-h = deque([(0,0)], 300)
+h = deque([(0, 0)], 300) # mouse drag position history
 
 def setup():
     size(500, 500)
@@ -30,5 +30,5 @@ def draw():
     h.append(h.popleft())
 
 def mouseDragged():
-    h.append((mouseX,mouseY))
+    h.append((mouseX, mouseY))
 ```
