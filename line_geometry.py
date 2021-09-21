@@ -19,6 +19,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_04_26 poly_area()
 2021_05_30 ccw() & simple_intersect() - modified is_poly_self_intersecting()
 2021_06_08 Removing PVectors all around, simplified min_max(points), added corner_angle(corner, a, b)
+201_09_21  Fix .dist() method in Line for 3D lines and allowed xa, ya, za, xb, yb, zb
 """
 
 from __future__ import division
@@ -36,8 +37,11 @@ class Line():
         elif len(args) == 4:
             self.start = tuple(args[0:2])
             self.end = tuple(args[2:4])
+        elif len(args) == 6:
+            self.start = tuple(args[0:3])
+            self.end = tuple(args[3:6])
         else:
-            raise ValueError, "Requires 1 Line-like object, a pair of points, or x1, y1, x2, y2 coords."
+            raise ValueError, "Requires 1 Line-like object, a pair of 2D or 3D tuples/PVectors, or x1, y1 [,z1], x2, y2 [,z2] coords."
 
     def __getitem__(self, i):
         return (self.start, self.end)[i]
@@ -49,7 +53,8 @@ class Line():
             self.end = v
     
     def dist(self):
-        return dist(self.start[0], self.start[1], self.end[0], self.end[1])
+        return dist(*(self.start + self.end))  # for 3D lines
+        # return dist(self.start[0], self.start[1], self.end[0], self.end[1])
 
     def plot(self, *args, **kwargs):
         function = kwargs.pop('function', None)
