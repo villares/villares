@@ -19,7 +19,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_04_26 poly_area()
 2021_05_30 ccw() & simple_intersect() - modified is_poly_self_intersecting()
 2021_06_08 Removing PVectors all around, simplified min_max(points), added corner_angle(corner, a, b)
-201_09_21  Fix .dist() method in Line for 3D lines and allowed xa, ya, za, xb, yb, zb
+2021_09_21 Fix .dist() method in Line for 3D lines and allowed xa, ya, za, xb, yb, zb
 """
 
 from __future__ import division
