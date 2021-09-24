@@ -13,7 +13,6 @@
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
 	    imagens = []
-
     if selection == None:
         print("Seleção cancelada.")
     else:
