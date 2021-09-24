@@ -161,29 +161,30 @@ def arc_filleted_poly(p_list, r_list, **kwargs):
     2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
     2020-11-11 Removing use of PVector to improve compatibility with pyp5js
     """
-    arc_func = kwargs.pop(
-        'arc_func', b_arc)  # draws with bezier aprox. arc by default
+    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
     # assumes a closed poly by default
     open_poly = kwargs.pop('open_poly', False)
 
     p_list, r_list = list(p_list), list(r_list)
     beginShape()
     if not open_poly:
-        for p0, p1, p2, r in zip(p_list,
-                                 [p_list[-1]] + p_list[:-1],
-                                 [p_list[-2]] + [p_list[-1]] + p_list[:-2],
-                                 [r_list[-1]] + r_list[:-1]
-                                 ):
+        for p0, p1, p2, r in zip(
+                p_list,
+                [p_list[-1]] + p_list[:-1],
+                [p_list[-2]] + [p_list[-1]] + p_list[:-2],
+                [r_list[-1]] + r_list[:-1]
+            ):
             m1 = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
             m2 = ((p2[0] + p1[0]) / 2.0, (p2[1] + p1[1]) / 2.0)
             arc_corner(p1, m1, m2, r, arc_func=arc_func, **kwargs)
         endShape(CLOSE)
     else:
-        for p0, p1, p2, r in zip(p_list[:-1],
-                                 [p_list[-1]] + p_list[:-2],
-                                 [p_list[-2]] + [p_list[-1]] + p_list[:-3],
-                                 [r_list[-1]] + r_list[:-2]
-                                 ):
+        for p0, p1, p2, r in zip(
+                p_list[:-1],
+                [p_list[-1]] + p_list[:-2],
+                [p_list[-2]] + [p_list[-1]] + p_list[:-3],
+                [r_list[-1]] + r_list[:-2]
+            ):
             m1 = ((p0[0] + p1[0]) / 2.0, (p0[1] + p1[1]) / 2.0)
             m2 = ((p2[0] + p1[0]) / 2.0, (p2[1] + p1[1]) / 2.0)
             arc_corner(p1, m1, m2, r, arc_func=arc_func, **kwargs)
@@ -196,8 +197,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
     2020-09-27 Added support for custom arc_func & kwargs
     2020-11-11 Avoiding the use of PVector
     """
-    arc_func = kwargs.pop(
-        'arc_func', b_arc)  # draws with bezier aprox. arc by default
+    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
 
     def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
@@ -264,7 +264,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
 def arc_augmented_poly(op_list, or_list=None, **kwargs):
     """
     Draw a continous PShape "Polyline" as if around pins of various diameters.
-    Has an ugly check_intersection mode that dows not draw and "roughly" checks
+    Has an ugly check_intersection mode that does not draw and "roughly" checks
     for self intersections using slow polygon aproximations.
     2020-09-22 Renamed from b_poly_arc_augmented 
     2020-09-24 Removed Bezier mode in favour of arc_func + any keyword arguments.
@@ -279,7 +279,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     assert len(op_list) == len(r2_list),\
         'Number of points and radii provided not the same.'
     check_intersection = kwargs.pop('check_intersection', False)
-    arc_func = kwargs.pop('arc_func', None)
+    arc_func = kwargs.pop('arc_func', b_arc)
     auto_flip = kwargs.pop('auto_flip', True)
     if check_intersection and arc_func:
         warn("check_intersection mode overrides arc_func (arc_func ignored).")
@@ -291,7 +291,6 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         kwargs = {"num_points": 4, "vertex_func": vertex_func}
     else:
         vertex_func = vertex
-        arc_func = arc_func or b_arc
     # remove overlapping adjacent points
     p_list, r_list = [], []
     for i1, p1 in enumerate(op_list):
