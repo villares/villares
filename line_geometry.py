@@ -129,14 +129,14 @@ def line_intersect(*args, **kwargs):
     else:
             raise ValueError, "line_intersect requires 2 lines, 4 points or 8 coords."
             
-    uAdivisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
-    if uAdivisor:
-        uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / uAdivisor
+    uA_divisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
+    if uA_divisor:
+        uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / uA_divisor
     else:
         return None
-    uBdivisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)        
-    if uBdivisor:        
-        uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / uBdivisor
+    uB_divisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)        
+    if uB_divisor:        
+        uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / uB_divisor
     else:
         return None
     if not in_segment or 0 <= uA <= 1 and 0 <= uB <= 1:
