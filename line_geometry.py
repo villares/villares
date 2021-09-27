@@ -118,16 +118,15 @@ def line_intersect(*args, **kwargs):
     as_PVector = kwargs.get('as_PVector', False)
     in_segment = kwargs.get('in_segment', True)
     
-    if len(args) == 8:
+    if len(args) == 2:  # expecting 2 Line objects or 2 tuples of 2 point tuples.
+        (x1, y1), (x2, y2) = args[0]
+        (x3, y3), (x4, y4) = args[1]
+    elif len(args) == 4:
+        (x1, y1), (x2, y2) = args[:2]
+        (x3, y3), (x4, y4) = args[2:]
+    elif len(args) == 8:
         x1, y1, x2, y2, x3, y3, x4, y4 = args
     else:
-        if len(args) == 2:
-            (x1, y1), (x2, y2) = args[0]
-            (x3, y3), (x4, y4) = args[1]
-        elif len(args) == 4:
-            (x1, y1), (x2, y2) = args[:2]
-            (x3, y3), (x4, y4) = args[2:]
-        else:
             raise ValueError, "line_intersect requires 2 lines, 4 points or 8 coords."
             
     uAdivisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
