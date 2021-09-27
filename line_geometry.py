@@ -20,6 +20,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_05_30 ccw() & simple_intersect() - modified is_poly_self_intersecting()
 2021_06_08 Removing PVectors all around, simplified min_max(points), added corner_angle(corner, a, b)
 2021_09_21 Fix .dist() method in Line for 3D lines and allowed xa, ya, za, xb, yb, zb
+2021_09_21 line_intesect() now may provide intersection outside the line segments & bug fix.
 """
 
 from __future__ import division
@@ -110,11 +111,14 @@ class Line():
 def line_intersect(*args, **kwargs):
     """
     Adapted from Bernardo Fontes https://github.com/berinhard/sketches/
-    2020-11-14 does not assume Line objects anymore, and works with 4 points or 8 coords.
+    2020-11-14 Does not assume Line objects anymore, and works with 4 points or 8 coords.
+    2021_09_26 Adding intersection outside the segments. Also fixing bug when calling with 8 coords as arguments.
     """
     as_PVector = kwargs.get('as_PVector', False)
+    in_segment = kwargs.get('in_segment', True)
+
     if len(args) == 8:
-        x1, y1, x2, y2, x3, y3, x4, y3 = args
+        x1, y1, x2, y2, x3, y3, x4, y4 = args
         line_a = (x1, y1), (x2, y2)
         line_b = (x3, y3), (x4, y4)
     else:
@@ -136,16 +140,18 @@ def line_intersect(*args, **kwargs):
         uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / \
             ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
     except ZeroDivisionError:
-        return
-    if not(0 <= uA <= 1 and 0 <= uB <= 1):
-        return
-    x = line_a[0][0] + uA * (line_a[1][0] - line_a[0][0])
-    y = line_a[0][1] + uA * (line_a[1][1] - line_a[0][1])
-    if as_PVector:
-        return PVector(x, y)
+        return None
+    
+    if not in_segment or 0 <= uA <= 1 and 0 <= uB <= 1:
+        x = line_a[0][0] + uA * (line_a[1][0] - line_a[0][0])
+        y = line_a[0][1] + uA * (line_a[1][1] - line_a[0][1])
+        if as_PVector:
+            return PVector(x, y)
+        else:
+            return (x, y)
     else:
-        return (x, y)
-
+        return None
+    
 def point_over_line(px, py, lax, lay, lbx, lby,
                     tolerance=0.1):
     """
