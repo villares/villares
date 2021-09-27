@@ -20,7 +20,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_05_30 ccw() & simple_intersect() - modified is_poly_self_intersecting()
 2021_06_08 Removing PVectors all around, simplified min_max(points), added corner_angle(corner, a, b)
 2021_09_21 Fix .dist() method in Line for 3D lines and allowed xa, ya, za, xb, yb, zb
-2021_09_21 line_intesect() now may provide intersection outside the line segments & bug fix.
+2021_09_21 line_intesect() now may provide intersection outside the line segments & bug fix. Clean up.
 """
 
 from __future__ import division
@@ -36,11 +36,11 @@ class Line():
             self.start = tuple(args[0])
             self.end = tuple(args[1])
         elif len(args) == 4:
-            self.start = tuple(args[0:2])
-            self.end = tuple(args[2:4])
+            self.start = tuple(args[:2])
+            self.end = tuple(args[2:])
         elif len(args) == 6:
-            self.start = tuple(args[0:3])
-            self.end = tuple(args[3:6])
+            self.start = tuple(args[:3])
+            self.end = tuple(args[3:])
         else:
             raise ValueError, "Requires 1 Line-like object, a pair of 2D or 3D tuples/PVectors, or x1, y1 [,z1], x2, y2 [,z2] coords."
 
@@ -113,42 +113,37 @@ def line_intersect(*args, **kwargs):
     Adapted from Bernardo Fontes https://github.com/berinhard/sketches/
     2020-11-14 Does not assume Line objects anymore, and works with 4 points or 8 coords.
     2021_09_26 Adding intersection outside the segments. Also fixing bug when calling with 8 coords as arguments.
+    2021_09_26 Removed line_a & line_b variables, rewrote ZeroDivision exception as two conditional checks.
     """
     as_PVector = kwargs.get('as_PVector', False)
     in_segment = kwargs.get('in_segment', True)
-
+    
     if len(args) == 8:
         x1, y1, x2, y2, x3, y3, x4, y4 = args
-        line_a = (x1, y1), (x2, y2)
-        line_b = (x3, y3), (x4, y4)
     else:
         if len(args) == 2:
-            line_a, line_b = args
+            (x1, y1), (x2, y2) = args[0]
+            (x3, y3), (x4, y4) = args[1]
         elif len(args) == 4:
-            line_a = tuple(args[:2])
-            line_b = tuple(args[2:])
+            (x1, y1), (x2, y2) = args[:2]
+            (x3, y3), (x4, y4) = args[2:]
         else:
             raise ValueError, "line_intersect requires 2 lines, 4 points or 8 coords."
-        x1, y1 = line_a[0][0], line_a[0][1]
-        x2, y2 = line_a[1][0], line_a[1][1]
-        x3, y3 = line_b[0][0], line_b[0][1]
-        x4, y4 = line_b[1][0], line_b[1][1]
-
-    try:
-        uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / \
-            ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
-        uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / \
-            ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
-    except ZeroDivisionError:
+            
+    uAdivisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
+    if uAdivisor:
+        uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / uAdivisor
+    else:
         return None
-    
+    uBdivisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)        
+    if uBdivisor:        
+        uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / uBdivisor
+    else:
+        return None
     if not in_segment or 0 <= uA <= 1 and 0 <= uB <= 1:
-        x = line_a[0][0] + uA * (line_a[1][0] - line_a[0][0])
-        y = line_a[0][1] + uA * (line_a[1][1] - line_a[0][1])
-        if as_PVector:
-            return PVector(x, y)
-        else:
-            return (x, y)
+        x = x1 + uA * (x2 - x1)
+        y = y1 + uA * (y2 - y1)
+        return PVector(x, y) if as_PVector else (x, y)
     else:
         return None
     
