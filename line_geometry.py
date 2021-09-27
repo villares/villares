@@ -127,7 +127,7 @@ def line_intersect(*args, **kwargs):
     elif len(args) == 8:
         x1, y1, x2, y2, x3, y3, x4, y4 = args
     else:
-            raise ValueError, "line_intersect requires 2 lines, 4 points or 8 coords."
+        raise ValueError, "line_intersect requires 2 lines, 4 points or 8 coords."
             
     uA_divisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
     if uA_divisor:
