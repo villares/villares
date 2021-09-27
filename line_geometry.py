@@ -113,7 +113,7 @@ def line_intersect(*args, **kwargs):
     Adapted from Bernardo Fontes https://github.com/berinhard/sketches/
     2020-11-14 Does not assume Line objects anymore, and works with 4 points or 8 coords.
     2021_09_26 Adding intersection outside the segments. Also fixing bug when calling with 8 coords as arguments.
-    2021_09_26 Removed line_a & line_b variables, rewrote ZeroDivision exception as two conditional checks.
+    2021_09_26 Removed line_a & line_b variables, rewrote ZeroDivision exception catching as a conditional check.
     """
     as_PVector = kwargs.get('as_PVector', False)
     in_segment = kwargs.get('in_segment', True)
@@ -129,14 +129,10 @@ def line_intersect(*args, **kwargs):
     else:
         raise ValueError, "line_intersect requires 2 lines, 4 points or 8 coords."
             
-    uA_divisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
-    if uA_divisor:
-        uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / uA_divisor
-    else:
-        return None
-    uB_divisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)        
-    if uB_divisor:        
-        uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / uB_divisor
+    divisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
+    if divisor:
+        uA = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / divisor
+        uB = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / divisor
     else:
         return None
     if not in_segment or 0 <= uA <= 1 and 0 <= uB <= 1:
