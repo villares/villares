@@ -355,8 +355,7 @@ def point_inside_poly(x, y, points):
         pp = points[i - 1]
         xi, yi = p
         xj, yj = pp
-        intersect = ((yi > y) != (yj > y)) and (
-            x < (xj - xi) * (y - yi) / (yj - yi) + xi)
+        intersect = ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
         if intersect:
             inside = not inside
     return inside
