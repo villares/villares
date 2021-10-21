@@ -21,6 +21,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_06_08 Removing PVectors all around, simplified min_max(points), added corner_angle(corner, a, b)
 2021_09_21 Fix .dist() method in Line for 3D lines and allowed xa, ya, za, xb, yb, zb
 2021_09_21 line_intesect() now may provide intersection outside the line segments & bug fix. Clean up.
+2021_10_20 Make min_max() compatible with Python 3
 """
 
 from __future__ import division
@@ -254,11 +255,11 @@ def min_max(points):
     Return two tuples or PVectors with the most extreme coordinates,
     resulting in "bounding box" corners.
     """
-    coords = zip(*points)
+    coords = tuple(zip(*points))
     if isinstance(points[0], PVector):
         return PVector(*map(min, coords)), PVector(*map(max, coords))
     else:
-        return map(min, coords), map(max, coords)
+        return tuple(map(min, coords)), tuple(map(max, coords))
 
 bounding_box = min_max
 
@@ -338,7 +339,7 @@ def par_hatch(points, divisions, *sides):
     return lines
 
 def is_poly_self_intersecting(poly_points):
-    ed = edges(poly_points)
+    ed = poly_edges(poly_points)
     for a, b in ed[::-1]:
         for c, d in ed[2::]:
             # test only non consecutive edges
