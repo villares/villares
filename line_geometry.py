@@ -339,9 +339,9 @@ def par_hatch(points, divisions, *sides):
     return lines
 
 def is_poly_self_intersecting(poly_points):
-    ed = poly_edges(poly_points)
-    for a, b in ed[::-1]:
-        for c, d in ed[2::]:
+    edges = poly_edges(poly_points)
+    for a, b in edges[::-1]:
+        for c, d in edges[2::]:
             # test only non consecutive edges
             if (a != c) and (b != c) and (a != d):
                 if simple_intersect(a, b, c, d):
