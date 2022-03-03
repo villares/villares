@@ -22,10 +22,19 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_09_21 Fix .dist() method in Line for 3D lines and allowed xa, ya, za, xb, yb, zb
 2021_09_21 line_intesect() now may provide intersection outside the line segments & bug fix. Clean up.
 2021_10_20 Make min_max() compatible with Python 3
+2022_03_02 Make it work with py5
 """
 
 from __future__ import division
 from helpers import lerp_tuple
+
+try:
+    EPSILON
+except NameError:
+    from py5 import *
+    beginShape = begin_shape
+    endShape = end_shape
+    bezierVertex = bezier_vertex
 
 class Line():
 
@@ -43,7 +52,9 @@ class Line():
             self.start = tuple(args[:3])
             self.end = tuple(args[3:])
         else:
-            raise ValueError, "Requires 1 Line-like object, a pair of 2D or 3D tuples/PVectors, or x1, y1 [,z1], x2, y2 [,z2] coords."
+            raise ValueError(
+    "Requires 1 Line-like object, a pair of 2D or 3D tuples/PVectors, or x1, y1 [,z1], x2, y2 [,z2] coords."
+            )
 
     def __getitem__(self, i):
         return (self.start, self.end)[i]
@@ -128,7 +139,7 @@ def line_intersect(*args, **kwargs):
     elif len(args) == 8:
         x1, y1, x2, y2, x3, y3, x4, y4 = args
     else:
-        raise ValueError, "line_intersect requires 2 lines, 4 points or 8 coords."
+        raise ValueError("line_intersect requires 2 lines, 4 points or 8 coords.")
             
     divisor = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1)
     if divisor:
