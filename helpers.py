@@ -10,6 +10,11 @@
 # 2021_03_05 imgext() -> has_img_ext()
 # 2021_06_08 added lerp_tuple()
 
+try:
+    lerp
+except NameError:
+    from py5 import lerp
+
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
 	    imagens = []
