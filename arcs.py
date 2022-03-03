@@ -9,11 +9,23 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2020-09-27 Revising arc_filleted_poly, added kwargs. Revised circle_arc and related functions
 2020-11    Improving compatibility with pyp5js, not using PVector anymore
 2021-07-26 Added auto-flip option to arc_augmented_poly
-
+2022-03-02 Make it work with py5
 """
 from warnings import warn
 from line_geometry import is_poly_self_intersecting, triangle_area
 
+try:
+    EPSILON
+except NameError:
+    from py5 import *
+    beginShape = begin_shape
+    endShape = end_shape
+    bezierVertex = bezier_vertex
+    textSize = text_size
+    
+    
+    
+TEXT_HEIGHT = 12
 DEBUG = False
 ROTATION = {0: 0,
             BOTTOM: 0,
@@ -359,7 +371,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
                 arc_func(p2[0], p2[1], r2 * 2, r2 * 2, start, a2, mode=2,
                          **kwargs)
             if DEBUG:
-                textSize(height / 30)
+                textSize(TEXT_HEIGHT)
                 text(str(int(degrees(start - a2))), p2[0], p2[1])
         else:
             # when the the segment is smaller than the diference between
@@ -434,7 +446,7 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     if d > abs(ri):
         clipped_ri_over_d = min(1, max(-1, ri / d))
         beta = asin(clipped_ri_over_d) + HALF_PI
-        pushMatrix()
+        push()
         translate(p1x, p1y)
         angle = atan2(p1x - p2x, p2y - p1y)
         rotate(angle + HALF_PI)
@@ -449,7 +461,7 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
         arc_func(d - offset, 0, r2 * 2, r2 * 2,
                  beta - PI, PI - beta, mode=2, **kwargs)
         endShape(CLOSE)
-        popMatrix()
+        pop()
     elif draw_internal_circles:
         arc_func(p1x, p1y, r1 * 2, r1 * 2, 0, TWO_PI, **kwargs)
         arc_func(p2x, p2y, r2 * 2, r2 * 2, 0, TWO_PI, **kwargs)
