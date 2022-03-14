@@ -14,6 +14,11 @@ try:
     lerp
 except NameError:
     from py5 import lerp
+    from py5 import color
+    from py5 import color_mode as colorMode
+    from py5 import push_style as pushStyle
+    from py5 import sketch_path as sketchPath
+    
 
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
