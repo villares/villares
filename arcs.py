@@ -10,7 +10,7 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2020-11    Improving compatibility with pyp5js, not using PVector anymore
 2021-07-26 Added auto-flip option to arc_augmented_poly
 2022-03-02 Make it work with py5
-2022-03-13 On arc_filleted_poly, add radius keyword agument to be used when.
+2022-03-13 On arc_filleted_poly, add radius keyword argument to be used.
 
 """
 from warnings import warn
