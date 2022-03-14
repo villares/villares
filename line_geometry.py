@@ -26,7 +26,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 """
 
 from __future__ import division
-from helpers import lerp_tuple
+from villares.helpers import lerp_tuple
 
 try:
     EPSILON
@@ -259,7 +259,7 @@ def pairwise(iterable):
     "s -> (s0, s1), (s1, s2), (s2, s3), ..."
     a, b = tee(iterable)
     next(b, None)
-    return zip(a, b)
+    return list(zip(a, b))
 
 def min_max(points):
     """
