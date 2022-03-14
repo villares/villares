@@ -10,9 +10,11 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2020-11    Improving compatibility with pyp5js, not using PVector anymore
 2021-07-26 Added auto-flip option to arc_augmented_poly
 2022-03-02 Make it work with py5
+2022-03-13 On arc_filleted_poly, add radius keyword agument to be used when.
+
 """
 from warnings import warn
-from line_geometry import is_poly_self_intersecting, triangle_area
+from villares.line_geometry import is_poly_self_intersecting, triangle_area
 
 try:
     EPSILON
@@ -164,7 +166,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
         endShape()
 
 
-def arc_filleted_poly(p_list, r_list, **kwargs):
+def arc_filleted_poly(p_list, r_list=None, **kwargs):
     """
     Draws a 'filleted' polygon with variable radius, depends on arc_corner()
 
@@ -172,10 +174,12 @@ def arc_filleted_poly(p_list, r_list, **kwargs):
     2020-09-27 Moved default args to kwargs, added kwargs support for custom arc_func
     2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
     2020-11-11 Removing use of PVector to improve compatibility with pyp5js
+    2022-03-13 Allows a radius keyword agument to be used when no r_list is suplied
     """
     arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
-    # assumes a closed poly by default
-    open_poly = kwargs.pop('open_poly', False)
+    open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
+    if r_list is None:
+        r_list = [kwargs.pop('radius', 0)] * len(p_list)
 
     p_list, r_list = list(p_list), list(r_list)
     beginShape()
