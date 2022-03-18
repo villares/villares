@@ -16,6 +16,7 @@ From https://github.com/villares/villares/blob/main/arcs.py
 from warnings import warn
 from villares.line_geometry import is_poly_self_intersecting, triangle_area
 
+# The following block makes this compatible with py5.ixora.io
 try:
     EPSILON
 except NameError:
@@ -25,10 +26,9 @@ except NameError:
     bezierVertex = bezier_vertex
     textSize = text_size
     
-    
-    
-TEXT_HEIGHT = 12
-DEBUG = False
+DEBUG, TEXT_HEIGHT = False, 12  # For debug
+
+# For use with half_circle and quarter_circle functions
 ROTATION = {0: 0,
             BOTTOM: 0,
             DOWN: 0,
