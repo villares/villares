@@ -26,7 +26,6 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 """
 
 from __future__ import division
-from villares.helpers import lerp_tuple
 
 try:
     EPSILON
@@ -465,3 +464,8 @@ def hatch_poly(*args, **kwargs):
     return ps
 
 hatch_rect = hatch_poly
+
+def lerp_tuple(a, b, t):   
+    return tuple(lerp_tuple(ca, cb, t) if isinstance(ca, tuple)
+                 else lerp(ca, cb, t)             
+                 for ca, cb in zip(a, b))
