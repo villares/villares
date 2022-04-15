@@ -376,6 +376,10 @@ def point_inside_poly(*args):
             inside = not inside
     return inside
 
+def centroid(pts):
+    xs, ys = zip(*pts)
+    return sum(xs) / len(xs), sum(ys) / len(ys)
+
 def inter_lines(given_line, poly_points):
     """ 
     Line objects that indicate the complete overlap of a given line
