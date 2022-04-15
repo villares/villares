@@ -23,6 +23,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_09_21 line_intesect() now may provide intersection outside the line segments & bug fix. Clean up.
 2021_10_20 Make min_max() compatible with Python 3
 2022_03_02 Make it work with py5
+2022_04_14 Adding to point_inside_poly(x, y, poly) a (pt, poly) arguments option
 """
 
 from __future__ import division
@@ -358,12 +359,16 @@ def is_poly_self_intersecting(poly_points):
                     return True
     return False
 
-def point_inside_poly(x, y, points):
+def point_inside_poly(*args):
     # ray-casting algorithm based on
     # https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
+    if len(args) == 2:
+        (x, y), poly = args
+    else:
+        x, y, poly = args
     inside = False
-    for i, p in enumerate(points):
-        pp = points[i - 1]
+    for i, p in enumerate(poly):
+        pp = poly[i - 1]
         xi, yi = p
         xj, yj = pp
         intersect = ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
