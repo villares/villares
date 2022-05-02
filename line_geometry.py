@@ -310,21 +310,17 @@ def rotate_point(*args):
     if len(args) == 2:
         (xp, yp), angle = args
         x0, y0 = 0, 0
-    if len(args) == 3:
+    elif len(args) == 3:,
         try:
             (xp, yp), angle, (x0, y0) = args
         except TypeError:
             xp, yp, angle = args
             x0, y0 = 0, 0
-    if len(args) == 5:
+    elif len(args) == 5:
         xp, yp, angle, x0, y0 = args
     x, y = xp - x0, yp - y0  # translate to origin
     xr = x * cos(angle) - y * sin(angle)
     yr = y * cos(angle) + x * sin(angle)
-    # if isinstance(args[0], PVector):                
-    #     return PVector(xr + x0, yr + y0)
-    # else:
-    #     return (xr + x0, yr + y0)
     return (xr + x0, yr + y0)
 
 def point_in_screen(*args):
