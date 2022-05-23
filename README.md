@@ -8,7 +8,7 @@
 - 🌱 I’m currently learning how not to talk too much and concentrate
 - 👯 I’m looking to collaborate on open resources to teach programming in a visual context
 - 💬 Ask me about drawing with Python! 
-    - Check out [py5](https://py5.ixora.io) it brings in the Processing drawing infrastructure!
+    - Check out [py5](https://py5.ixora.io), it brings in the Processing drawing infrastructure!
 - 📫 How to reach me: [twitter.com/villares](https://twitter.com/villares)
     - If you think the things that I share are usefull, consider donating at [ko-fi.com/villares](https://ko-fi.com/villares)
 - 😄 Pronouns: he/him
