@@ -310,7 +310,7 @@ def rotate_point(*args):
     if len(args) == 2:
         (xp, yp), angle = args
         x0, y0 = 0, 0
-    elif len(args) == 3:,
+    elif len(args) == 3:
         try:
             (xp, yp), angle, (x0, y0) = args
         except TypeError:
