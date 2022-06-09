@@ -8,7 +8,7 @@
 - 💬 Ask me about drawing with Python! 
     - Check out [py5](https://py5.ixora.io), it brings in the Processing drawing infrastructure!
 - 📫 How to reach me: [twitter.com/villares](https://twitter.com/villares)
-    - If you think the things that I share are usefull, consider donating at [ko-fi.com/villares](https://ko-fi.com/villares)
+    - If you find the things I share here usefull, consider supporting my work at [gumroad.com/villares](https://gumroad.com/villares)
 - 😄 Pronouns: he/him
 - ⚡ Fun fact: I actually use this repo to store some helper [code](https://github.com/villares/villares) I use in my drawings.
 
