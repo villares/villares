@@ -132,6 +132,10 @@ def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, **kwargs):
     p_arc(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
           mode=mode, **kwargs)
 
+def circle_arc_pts(x, y, radius, start_ang, sweep_ang, **kwargs):
+    p_arc_pts(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
+              **kwargs)
+
 def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
           num_points=24, vertex_func=None):
     """
@@ -149,6 +153,27 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
         vertex_func(vx, vy)
     if mode == 0:
         endShape()
+
+def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=24):
+    """
+    Returns points approximating an arc using the same
+    signature as the original Processing arc().
+    """
+    result = []
+    sweep_angle = end_angle - start_angle
+    if sweep_angle == 0:
+        vx = cx + cos(start_angle) * w / 2.0
+        vy = cy + sin(start_angle) * h / 2.0
+        return [(vx, vy)]
+    step_angle = float(sweep_angle) / num_points    
+    va = start_angle
+    side = 1 if sweep_angle > 0 else -1
+    while va * side <= end_angle * side:
+        vx = cx + cos(va) * w / 2.0
+        vy = cy + sin(va) * h / 2.0
+        result.append((vx, vy))
+        va += step_angle
+    return result
 
 def arc_filleted_poly(p_list, r_list=None, **kwargs):
     """
@@ -454,27 +479,6 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
             r = min(r1, r2)
             x, y = (p1x, p1y) if r1 < r2 else (p2x, p2y)
             arc_func(x, y, r * 2, r * 2, 0, TWO_PI, **kwargs)
-            
-def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=24):
-    """
-    Returns points approximating an arc using the same
-    signature as the original Processing arc().
-    """
-    result = []
-    sweep_angle = end_angle - start_angle
-    if sweep_angle == 0:
-        vx = cx + cos(start_angle) * w / 2.0
-        vy = cy + sin(start_angle) * h / 2.0
-        return [(vx, vy)]
-    step_angle = float(sweep_angle) / num_points    
-    va = start_angle
-    side = 1 if sweep_angle > 0 else -1
-    while va * side <= end_angle * side:
-        vx = cx + cos(va) * w / 2.0
-        vy = cy + sin(va) * h / 2.0
-        result.append((vx, vy))
-        va += step_angle
-    return result
 
 def var_bar_pts(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     """
