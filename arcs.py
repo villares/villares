@@ -183,7 +183,7 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
     2020-09-27 Moved default args to kwargs, added kwargs support for custom arc_func
     2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
     2020-11-11 Removing use of PVector to improve compatibility with pyp5js
-    2022-03-13 Allows a radius keyword agument to be used when no r_list is suplied
+    2022-03-13 Allows a radius keyword argument to be used when no r_list is suplied
     """
     arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
     open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
