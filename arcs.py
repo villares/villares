@@ -11,7 +11,7 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2021-07-26 Added auto-flip option to arc_augmented_poly
 2022-03-02 Make it work with py5
 2022-03-13 On arc_filleted_poly, add radius keyword argument to be used.
-2022-06-10 Added p_arc_pts(), var_bar_pts(). Also some p_arc and var_bar cleanup.
+2022-06-10 Added p_arc_pts() & var_bar_pts(). Also some p_arc and var_bar clean up.
 """
 
 from warnings import warn
@@ -74,7 +74,7 @@ def b_arc(cx, cy, w, h, start_angle, end_angle, mode=0):
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
-    # Based on ideas from Richard DeVeneza via code by Gola Levin:
+    # Based on ideas from Richard DeVeneza via code by Golan Levin:
     # http://www.flong.com/blog/2009/bezier-approximation-of-a-circular-arc-in-processing/
     theta = end_angle - start_angle
     # Compute raw Bezier coordinates.
