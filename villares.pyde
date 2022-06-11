@@ -1,4 +1,4 @@
-# from arcs import *
+from arcs import *
 
 # def setup():
 #     size(500, 500, P3D)
@@ -31,6 +31,7 @@ def draw():
         endShape()
     offset = 20
     segments = []
+    var_bar(mouseX, mouseY, 300, 300, 100, 50, arc_func=p_arc, num_points=12)
     for (xa, ya), (xb, yb) in zip(path[:-1], path[1:]):
         angle = atan2(yb - ya, xb - xa)
         v = PVector.fromAngle(angle + HALF_PI) * offset 

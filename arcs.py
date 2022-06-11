@@ -11,8 +11,9 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2021-07-26 Added auto-flip option to arc_augmented_poly
 2022-03-02 Make it work with py5
 2022-03-13 On arc_filleted_poly, add radius keyword argument to be used.
-
+2022-06-10 Added p_arc_pts(), var_bar_pts(). Also some p_arc and var_bar cleanup.
 """
+
 from warnings import warn
 
 try:
@@ -141,34 +142,13 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
              endShape() for use inside a larger PShape.
     """
     vertex_func = vertex_func or vertex
-    sweep_angle = end_angle - start_angle
     if mode == 0:
         beginShape()
-    if sweep_angle < 0:
-        start_angle, end_angle = end_angle, start_angle
-        sweep_angle = -sweep_angle
-        angle = float(sweep_angle) / abs(num_points)
-        a = end_angle
-        while a >= start_angle:
-            sx = cx + cos(a) * w / 2.0
-            sy = cy + sin(a) * h / 2.0
-            vertex_func(sx, sy)
-            a -= angle
-    elif sweep_angle > 0:
-        angle = sweep_angle / int(num_points)
-        a = start_angle
-        while a <= end_angle:
-            sx = cx + cos(a) * w / 2.0
-            sy = cy + sin(a) * h / 2.0
-            vertex_func(sx, sy)
-            a += angle
-    else:  # sweep_angle == 0
-        sx = cx + cos(start_angle) * w / 2.0
-        sy = cy + sin(start_angle) * h / 2.0
-        vertex_func(sx, sy)
+    vertex_pts = arc_pts(cx, cy, w, h, start_angle, end_angle, num_points)
+    for vx, vy in vertex_pts:
+        vertex_func(vx, vy)
     if mode == 0:
         endShape()
-
 
 def arc_filleted_poly(p_list, r_list=None, **kwargs):
     """
@@ -436,15 +416,15 @@ def bar(x1, y1, x2, y2, thickness, **kwargs):
 def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     """
     Tangent/tangent shape on 2 circles of arbitrary radius
-
     # 2020-9-25 Added **kwargs, now one can use arc_func=p_arc & num_points=N   
     # 2020-9-26 Added treatment to shorter=N so as to incorporate bar() use.
                 Added a keyword argument, internal=True is the default,
-                internal=False disables drawing internal circles.
+                internal=False disables drawing internal circle.
                 Minor cleanups, and removed "with" for pushMatrix().
+    # 2022-6-10 Another cleanup (gosh), changed behaviour for small distances a bit.
     """
     r2 = r2 if r2 is not None else r1
-    draw_internal_circles = kwargs.pop('internal', True)
+    draw_internal_circle = kwargs.pop('internal', True)
     arc_func = kwargs.pop('arc_func', b_arc)
     shorter = kwargs.pop('shorter', 0)
     assert not (shorter and r1 != r2),\
@@ -458,10 +438,6 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
         translate(p1x, p1y)
         angle = atan2(p1x - p2x, p2y - p1y)
         rotate(angle + HALF_PI)
-        x1 = cos(beta) * r1
-        y1 = sin(beta) * r1
-        x2 = cos(beta) * r2
-        y2 = sin(beta) * r2
         beginShape()
         offset = shorter / 2.0 if shorter < d else d / 2.0
         arc_func(offset, 0, r1 * 2, r1 * 2,
@@ -470,6 +446,63 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
                  beta - PI, PI - beta, mode=2, **kwargs)
         endShape(CLOSE)
         pop()
-    elif draw_internal_circles:
-        arc_func(p1x, p1y, r1 * 2, r1 * 2, 0, TWO_PI, **kwargs)
-        arc_func(p2x, p2y, r2 * 2, r2 * 2, 0, TWO_PI, **kwargs)
+    else:  # draw a circle with the bigger radius if distance is too small
+        r = max(r1, r2)
+        x, y = (p1x, p1y) if r1 > r2 else (p2x, p2y)
+        arc_func(x, y, r * 2, r * 2, 0, TWO_PI, **kwargs)
+        if draw_internal_circle:
+            r = min(r1, r2)
+            x, y = (p1x, p1y) if r1 < r2 else (p2x, p2y)
+            arc_func(x, y, r * 2, r * 2, 0, TWO_PI, **kwargs)
+            
+def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=24):
+    """
+    Returns points approximating an arc using the same
+    signature as the original Processing arc().
+    """
+    result = []
+    sweep_angle = end_angle - start_angle
+    if sweep_angle == 0:
+        vx = cx + cos(start_angle) * w / 2.0
+        vy = cy + sin(start_angle) * h / 2.0
+        return [(vx, vy)]
+    step_angle = float(sweep_angle) / num_points    
+    va = start_angle
+    side = 1 if sweep_angle > 0 else -1
+    while va * side <= end_angle * side:
+        vx = cx + cos(va) * w / 2.0
+        vy = cy + sin(va) * h / 2.0
+        result.append((vx, vy))
+        va += step_angle
+    return result
+
+def var_bar_pts(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
+    """
+    Tangent/tangent shape on 2 circles of arbitrary radius
+    """
+    r2 = r2 if r2 is not None else r1
+    shorter = kwargs.pop('shorter', 0)
+    assert not (shorter and r1 != r2),\
+        "Can't draw shorter var_bar with different radii"
+    d = dist(p1x, p1y, p2x, p2y)
+    ri = r1 - r2
+    result = []
+    if d > abs(ri):
+        clipped_ri_over_d = min(1, max(-1, ri / d))
+        beta = asin(clipped_ri_over_d) + HALF_PI
+        angle = atan2(p1x - p2x, p2y - p1y) + HALF_PI
+        offset = shorter / 2.0 if shorter < d else d / 2.0
+        result.extend(arc_pts(offset, 0, r1 * 2, r1 * 2,
+                     -beta - PI, beta - PI, **kwargs))
+        result.extend(arc_pts(d - offset, 0, r2 * 2, r2 * 2,
+                      beta - PI, PI - beta, **kwargs))
+        return rotate_offset_points(result, angle, p1x, p1y)
+    else:
+        r = max(r1, r2)
+        x, y = (p1x, p1y) if r1 > r2 else (p2x, p2y)
+        return arc_pts(x, y, r * 2, r * 2, 0, TWO_PI, **kwargs)
+                          
+def rotate_offset_points(pts, angle, offx, offy, y0=0, x0=0):
+    return [(((xp - x0) * cos(angle) - (yp - y0) * sin(angle)) + x0 + offx,
+             ((yp - y0) * cos(angle) + (xp - x0) * sin(angle)) + y0 + offy)
+            for xp, yp in pts]
