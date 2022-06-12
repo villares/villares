@@ -192,6 +192,9 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
     """
     arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
     open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
+    assert p_list, 'No points were provided.'
+    assert not ('radius' in kwargs and r_list),\
+           "You can't use a radii list and a radius kwarg together."
     if r_list is None:
         r_list = [kwargs.pop('radius', 0)] * len(p_list)
     p_list, r_list = list(p_list), list(r_list)
@@ -314,6 +317,8 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     2022-06-11 Added remap py5 compatibility alias & radius kwarg for or_list=None
     """
     assert op_list, 'No points were provided.'
+    assert not ('radius' in kwargs and or_list),\
+           "You can't use a radii list and a radius kwarg together."
     if 'radius' in kwargs and or_list == None:
         or_list = [kwargs.pop('radius')] * len(op_list)
     if or_list == None:
