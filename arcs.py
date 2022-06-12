@@ -12,7 +12,8 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2022-03-02 Make it work with py5
 2022-03-13 On arc_filleted_poly, add radius keyword argument to be used.
 2022-06-10 Added arc_pts() & var_bar_pts(). Also some p_arc and var_bar clean up.
-2022-06-11 Fixing arc_pts bug. Attempt at making arc_filleted_poly return points with arc_pts
+2022-06-11 Fixing arc_pts bug. Making arc_filleted_poly return points with arc_pts
+           Added a radius keywarg to arc_augmented poly, and a py5 compatibilty fix.
 """
 
 from warnings import warn
@@ -25,6 +26,7 @@ except ModuleNotFoundError:
 # The following block makes this compatible with py5.ixora.io
 try:
     EPSILON
+    remap = map
 except NameError:
     from py5 import *
     beginShape = begin_shape
@@ -186,14 +188,15 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
     2020-11-10 Moving vertex_func=vertex inside body to make this more compatible with pyp5js
     2020-11-11 Removing use of PVector to improve compatibility with pyp5js
     2022-03-13 Allows a radius keyword argument to be used when no r_list is suplied
-    2022-06-11 Refactoring and preparing a non-drawing version.
+    2022-06-11 Refactoring and added arc_pts non-drawing feature that returns points.
     """
     arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier aprox. arc by default
     open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
     if r_list is None:
         r_list = [kwargs.pop('radius', 0)] * len(p_list)
     p_list, r_list = list(p_list), list(r_list)
-    draw_shape = True if arc_func != arc_pts else False
+    draw_shape = False if arc_func == arc_pts else True
+    
     def mid(p0, p1):
         return (p0[0] + p1[0]) * 0.5, (p0[1] + p1[1]) * 0.5
     
@@ -218,7 +221,7 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
             pts_list.extend(arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
                                        arc_func=arc_func, **kwargs))
         return pts_list
-    # if draw shape:
+    # then, if draw_shape:
     if open_poly:
         endShape()       
     else:
@@ -236,7 +239,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
 
     def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
-        return((pt[0] - dx * factor), (pt[1] - dy * factor))
+        return (pt[0] - dx * factor), (pt[1] - dy * factor)
 
     # Vectors 1 and 2
     dx1, dy1 = pc[0] - p1[0], pc[1] - p1[1]
@@ -292,7 +295,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
         start_angle, end_angle = end_angle, start_angle
         sweep_angle = -sweep_angle
     if arc_func == arc_pts:
-        return arc_func(arc_center[0], arc_center[1], 2 * max_r, 2 * max_r,
+        return arc_pts(arc_center[0], arc_center[1], 2 * max_r, 2 * max_r,
                         start_angle, start_angle + sweep_angle, **kwargs)
     # else, draw "naked" arc (without beginShape & endShape)
     arc_func(arc_center[0], arc_center[1], 2 * max_r, 2 * max_r,
@@ -307,9 +310,12 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     2020-09-22 Renamed from b_poly_arc_augmented 
     2020-09-24 Removed Bezier mode in favour of arc_func + any keyword arguments.
     2020-09-26 Moved arc_func to kwargs, updates exceptions
-    2021-07-26 auto-flip option (when concave vertex radius = -radius)
+    2021-07-26 Added auto-flip switch/option (when concave vertex radius = -radius)
+    2022-06-11 Added remap py5 compatibility alias & radius kwarg for or_list=None
     """
     assert op_list, 'No points were provided.'
+    if 'radius' in kwargs and or_list == None:
+        or_list = [kwargs.pop('radius')] * len(op_list)
     if or_list == None:
         r2_list = [0] * len(op_list)
     else:
@@ -418,9 +424,9 @@ def reduce_radius(p1, p2, r1, r2):
     ri = abs(r1 - r2)
     if d - ri <= 0:
         if abs(r1) > abs(r2):
-            r1 = map(d, ri + 1, 0, r1, r2)
+            r1 = remap(d, ri + 1, 0, r1, r2)
         else:
-            r2 = map(d, ri + 1, 0, r2, r1)
+            r2 = remap(d, ri + 1, 0, r2, r1)
     return(r1, r2)
 
 def circ_circ_tangent(p1, p2, r1, r2):
