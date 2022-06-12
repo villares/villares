@@ -330,6 +330,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     check_intersection = kwargs.pop('check_intersection', False)
     arc_func = kwargs.pop('arc_func', b_arc)
     auto_flip = kwargs.pop('auto_flip', True)
+    gradual_flip = kwargs.pop('gradual_flip', False)
     if check_intersection and arc_func:
         warn("check_intersection mode overrides arc_func (arc_func ignored).")
     if check_intersection:
@@ -360,11 +361,11 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         if or_list == None:
             r_list[i1] = a
         else:
-            # # a shrink to flip option...
-            # if abs(a) < 1:
-            #     r_list[i1] = r_list[i1] * abs(a)
-            if a < 0 and auto_flip:
+            if auto_flip and a < 0:
                 r_list[i1] = -r_list[i1]
+            # an experimental shrink to flip option...
+            if gradual_flip and abs(a) < 1:
+                r_list[i1] = r_list[i1] * abs(a)
     # reduce radius that won't fit
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
