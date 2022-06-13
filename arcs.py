@@ -13,7 +13,8 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2022-03-13 On arc_filleted_poly, add radius keyword argument to be used.
 2022-06-10 Added arc_pts() & var_bar_pts(). Also some p_arc and var_bar clean up.
 2022-06-11 Fixing arc_pts bug. Making arc_filleted_poly return points with arc_pts
-           Added a radius keywarg to arc_augmented poly, and a py5 compatibilty fix.
+           Added a radius keywarg to arc_augmented_poly, and a py5 compatibilty fix.
+2022_06_13 Attempt at arc_augmented_points(), changing some behaviour of arc_augmente_poly()
 """
 
 from warnings import warn
@@ -360,12 +361,12 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         a = triangle_area(p0, p1, p2) / 1000.
         if or_list == None:
             r_list[i1] = a
-        else:
-            if auto_flip and a < 0:
-                r_list[i1] = -r_list[i1]
-            # an experimental shrink to flip option...
-            if gradual_flip and abs(a) < 1:
-                r_list[i1] = r_list[i1] * abs(a)
+        if or_list == None:
+            r_list[i1] = a 
+        elif auto_flip and a < 0:
+            r_list[i1] = -r_list[i1]
+            if gradual_flip:
+                r_list[i1] = r_list[i1] * min(1, abs(a))
     # reduce radius that won't fit
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
@@ -425,15 +426,116 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     if check_intersection:
         return is_poly_self_intersecting(_points)
 
-def reduce_radius(p1, p2, r1, r2):
+def arc_augmented_points(op_list, or_list=None, **kwargs):
+    """
+    A version of arc_augmented_poly that returns the points
+    of a poly-approximation with arc_pts
+    """
+    
+    def mid(p0, p1):
+        return (p0[0] + p1[0]) * 0.5, (p0[1] + p1[1]) * 0.5
+    
+    assert op_list, 'No points were provided.'
+    assert not ('radius' in kwargs and or_list),\
+        "You can't use a radii list and a radius kwarg together."
+    if 'radius' in kwargs and or_list == None:
+        or_list = [kwargs.pop('radius')] * len(op_list)
+    if or_list == None:
+        r2_list = [0] * len(op_list)
+    else:
+        r2_list = list(or_list)
+    assert len(op_list) == len(r2_list),\
+        'Number of points and radii provided not the same.'
+    auto_flip = kwargs.pop('auto_flip', True)
+    gradual_flip = kwargs.pop('gradual_flip', False)  # experimentas    
+    pts_list = []
+    # remove overlapping adjacent points
+    p_list, r_list = [], []
+    p2_list = list(op_list)
+    for i1, p1 in enumerate(p2_list):
+        i2 = (i1 + 1) % len(p2_list)
+        p2, r2, r1 = p2_list[i2], r2_list[i2], r2_list[i1]
+        d = dist(p1[0], p1[1], p2[0], p2[1])
+        if d > abs(r1 - r2):
+            p_list.append(p1)
+            r_list.append(r1)
+        else:
+            p2_list[i2] = mid(p1, p2)
+            r2_list[i2] = max(r1, r2)
+    # invert radius
+    for i1, p1 in enumerate(p_list):
+        i0 = (i1 - 1)
+        p0 = p_list[i0]
+        i2 = (i1 + 1) % len(p_list)
+        p2 = p_list[i2]
+        a = triangle_area(p0, p1, p2) / 1000
+        if or_list == None:
+            r_list[i1] = a 
+        if or_list == None:
+            r_list[i1] = a 
+        elif auto_flip and a < 0:
+            r_list[i1] = -r_list[i1]
+            if gradual_flip:
+                r_list[i1] = r_list[i1] * min(1, abs(a))
+    # reduce radius that won't fit
+    for i1, p1 in enumerate(p_list):
+        i2 = (i1 + 1) % len(p_list)
+        p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
+        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2)
+    # calculate the tangents
+    a_list = []
+    for i1, p1 in enumerate(p_list):
+        i2 = (i1 + 1) % len(p_list)
+        p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
+        cct = circ_circ_tangent(p1, p2, r1, r2)
+        a_list.append(cct)
+    # now draw it!
+    for i1, ia in enumerate(a_list):
+        i2 = (i1 + 1) % len(a_list)
+        p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
+        a1, p11, p12 = ia
+        a2, p21, p22 = a_list[i2]
+        if DEBUG:
+            circle(p1[0], p1[1], r1 * 2)
+        if a1 != None and a2 != None:
+            start = a1 if a1 < a2 else a1 - TWO_PI # was <
+            if r2 < 0:  # was <=
+                a2 = a2 - TWO_PI
+            abs_angle = abs(a2 - start)
+            if abs_angle > TWO_PI:
+                if a2 < 0:
+                    a2 += TWO_PI
+                else:
+                    a2 -= TWO_PI
+            if abs(a2 - start) != TWO_PI:
+                pts_list.extend(arc_pts(p2[0], p2[1], r2 * 2, r2 * 2, start, a2,
+                                        **kwargs))
+            if DEBUG:
+                textSize(TEXT_HEIGHT)
+                text(' {:0.2f} {:0.2f}'.format(r2, degrees(abs_angle)), p2[0], p2[1])
+        else:
+            # when the the segment is smaller than the diference between
+            # radius, circ_circ_tangent won't renturn the angle
+            if DEBUG:
+                ellipse(p2[0], p2[1], r1, r1)
+            if a1:
+                pts_list.append((p12[0], p12[1]))
+            if a2:
+                pts_list.append((p21[0], p21[1]))
+    return pts_list
+
+def reduce_radius(p1, p2, r1, r2, reduce_both=True):
     d = dist(p1[0], p1[1], p2[0], p2[1])
     ri = abs(r1 - r2)
     if d - ri <= 0:
-        if abs(r1) > abs(r2):
+        if reduce_both:
+           r1, r2 = (remap(d, ri + 1, 0, r1, (r1 + r2) / 2),
+                     remap(d, ri + 1, 0, r2, (r1 + r2) / 2))
+        elif abs(r1) > abs(r2):
             r1 = remap(d, ri + 1, 0, r1, r2)
         else:
             r2 = remap(d, ri + 1, 0, r2, r1)
-    return(r1, r2)
+    return r1, r2
 
 def circ_circ_tangent(p1, p2, r1, r2):
     d = dist(p1[0], p1[1], p2[0], p2[1])
