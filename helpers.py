@@ -8,7 +8,8 @@
 # 2020-12-04 Brought in triangle_area, rect_points, rotate_point, point_in_screen
 # 2021-01_26 Reverted 2020-12-04
 # 2021_03_05 imgext() -> has_img_ext()
-# 2021_06_08 added lerp_tuple()
+# 2021_06_08 Added lerp_tuple()
+# 2022_06_13 Added save_png_with_src() (for py5 only)
 
 try:
     lerp
@@ -113,3 +114,22 @@ def memoize(f):
             return r
         return memo[args]
     return memoized_func
+
+def save_png_with_src(output, *args, **kwargs):
+    import PIL
+    import py5
+    import __main__ as main
+
+    with open(main.__file__) as f:
+        src = ''.join(f.read())
+
+    metadata = PIL.PngImagePlugin.PngInfo()
+
+    context = kwargs.pop('context', None)
+    if context:
+        metadata.add_itxt("context", context)   
+    metadata.add_itxt("code", src)
+    py5.save(output, *args, pnginfo=metadata, **kwargs)
+    # read back and print...
+    # target_image = PIL.Image.open(output)
+    # print(target_image.info['code'])
