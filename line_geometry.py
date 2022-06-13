@@ -24,6 +24,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2021_10_20 Make min_max() compatible with Python 3
 2022_03_02 Make it work with py5
 2022_04_14 Adding to point_inside_poly(x, y, poly) a (pt, poly) arguments option
+2022_06_13 Adding simplified_points()
 """
 
 from __future__ import division
@@ -474,3 +475,11 @@ def lerp_tuple(a, b, t):
     return tuple(lerp_tuple(ca, cb, t) if isinstance(ca, tuple)
                  else lerp(ca, cb, t)             
                  for ca, cb in zip(a, b))
+    
+def simplified_points(pts_list, min_dist):
+        reference_point = pts_list[0]
+        yield reference_point
+        for x, y in pts_list[1:]:
+            if dist(x, y, *reference_point) >= min_dist: 
+                reference_point = x, y
+                yield x, y
