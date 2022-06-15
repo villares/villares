@@ -362,7 +362,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         i2 = (i1 + 1) % len(p_list)
         p2 = p_list[i2]
         a = triangle_area(p0, p1, p2) / 1000.
-        elif auto_flip and a < 0:
+        if auto_flip and a < 0:
             r_list[i1] = -r_list[i1]
             if gradual_flip:
                 r_list[i1] = r_list[i1] * min(1, abs(a))
@@ -466,7 +466,7 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
         i2 = (i1 + 1) % len(p_list)
         p2 = p_list[i2]
         a = triangle_area(p0, p1, p2) / 1000
-        elif auto_flip and a < 0:
+        if auto_flip and a < 0:
             r_list[i1] = -r_list[i1]
             if gradual_flip:
                 r_list[i1] = r_list[i1] * min(1, abs(a))
