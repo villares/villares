@@ -316,22 +316,25 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     2020-09-26 Moved arc_func to kwargs, updates exceptions
     2021-07-26 Added auto-flip switch/option (when concave vertex radius = -radius)
     2022-06-11 Added remap py5 compatibility alias & radius kwarg for or_list=None
+    2022-06-14 Connected to arc_augmented_points. Added reduce_both kwarg.
     """
+    arc_func = kwargs.pop('arc_func', b_arc)
+    if arc_func == arc_pts:
+        return arc_augmented_points(op_list, or_list, **kwargs)
+    
     assert op_list, 'No points were provided.'
     assert not ('radius' in kwargs and or_list),\
            "You can't use a radii list and a radius kwarg together."
     if 'radius' in kwargs and or_list == None:
         or_list = [kwargs.pop('radius')] * len(op_list)
-    if or_list == None:
-        r2_list = [0] * len(op_list)
-    else:
-        r2_list = or_list[:]
+    r2_list = list(or_list)
     assert len(op_list) == len(r2_list),\
         'Number of points and radii provided not the same.'
     check_intersection = kwargs.pop('check_intersection', False)
-    arc_func = kwargs.pop('arc_func', b_arc)
+
     auto_flip = kwargs.pop('auto_flip', True)
     gradual_flip = kwargs.pop('gradual_flip', False)
+    reduce_both = kwargs.pop('reduce_both', True)
     if check_intersection and arc_func:
         warn("check_intersection mode overrides arc_func (arc_func ignored).")
     if check_intersection:
@@ -359,10 +362,6 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         i2 = (i1 + 1) % len(p_list)
         p2 = p_list[i2]
         a = triangle_area(p0, p1, p2) / 1000.
-        if or_list == None:
-            r_list[i1] = a
-        if or_list == None:
-            r_list[i1] = a 
         elif auto_flip and a < 0:
             r_list[i1] = -r_list[i1]
             if gradual_flip:
@@ -371,7 +370,8 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
-        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2)
+        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2,
+                                               reduce_both=reduce_both)
     # calculate the tangents
     a_list = []
     for i1, p1 in enumerate(p_list):
@@ -440,10 +440,7 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
         "You can't use a radii list and a radius kwarg together."
     if 'radius' in kwargs and or_list == None:
         or_list = [kwargs.pop('radius')] * len(op_list)
-    if or_list == None:
-        r2_list = [0] * len(op_list)
-    else:
-        r2_list = list(or_list)
+    r2_list = list(or_list)
     assert len(op_list) == len(r2_list),\
         'Number of points and radii provided not the same.'
     auto_flip = kwargs.pop('auto_flip', True)
@@ -469,10 +466,6 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
         i2 = (i1 + 1) % len(p_list)
         p2 = p_list[i2]
         a = triangle_area(p0, p1, p2) / 1000
-        if or_list == None:
-            r_list[i1] = a 
-        if or_list == None:
-            r_list[i1] = a 
         elif auto_flip and a < 0:
             r_list[i1] = -r_list[i1]
             if gradual_flip:
