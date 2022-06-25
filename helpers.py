@@ -23,7 +23,7 @@ except NameError:
 
 def adicionar_imagens(selection, imagens=None):
     if imagens is None:
-	    imagens = []
+        imagens = []
     if selection == None:
         print("Seleção cancelada.")
     else:
@@ -115,12 +115,28 @@ def memoize(f):
         return memo[args]
     return memoized_func
 
-def save_png_with_src(output, *args, **kwargs):
+def save_png_with_src(output=None, *args, **kwargs):
     import PIL
     import py5
-    import __main__ as main
-
-    with open(main.__file__) as f:
+    from datetime import datetime
+    import __main__ as m
+    
+    src_file = m.__file__
+    
+    add_timestamp = kwargs.pop('timestamp', True) 
+    if add_timestamp:
+        ts = str(datetime.now())[:19].replace(' ', '_').replace(':', '-')    
+        if output is None:
+            output = ts + '.png'
+        else:
+            output = ts + '_' + output
+    else:
+        raise ValueError(
+            'You can\'t disable the timestamp '
+            'if you don\'t provide a filename for output'
+            )
+    
+    with open(src_file) as f:
         src = ''.join(f.read())
 
     metadata = PIL.PngImagePlugin.PngInfo()
@@ -133,3 +149,4 @@ def save_png_with_src(output, *args, **kwargs):
     # read back and print...
     # target_image = PIL.Image.open(output)
     # print(target_image.info['code'])
+
