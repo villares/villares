@@ -15,6 +15,7 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2022-06-11 Fixing arc_pts bug. Making arc_filleted_poly return points with arc_pts
            Added a radius keywarg to arc_augmented_poly, and a py5 compatibilty fix.
 2022_06_13 Attempt at arc_augmented_points(), changing some behaviour of arc_augmente_poly()
+2022_07_03 Adding alternative resolution control to arc_pts (@introscopia's suggestion)
 """
 
 from warnings import warn
@@ -159,7 +160,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
     if mode == 0:
         endShape()
 
-def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=24):
+def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=None, seg_len=None):
     """
     Returns points approximating an arc using the same
     signature as the original Processing arc().
@@ -169,6 +170,10 @@ def arc_pts(cx, cy, w, h, start_angle, end_angle, num_points=24):
         vx = cx + cos(start_angle) * w / 2.0
         vy = cy + sin(start_angle) * h / 2.0
         return [(vx, vy)]
+    if num_points is None and seg_len is None:
+        num_points = 24
+    elif num_points is None:
+        num_points = abs(sweep_angle * (w + h) / 4) / seg_len
     pts_list = []
     step_angle = float(sweep_angle) / num_points    
     va = start_angle
