@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 From https://github.com/villares/villares/blob/main/arcs.py
@@ -16,6 +17,8 @@ From https://github.com/villares/villares/blob/main/arcs.py
            Added a radius keywarg to arc_augmented_poly, and a py5 compatibilty fix.
 2022_06_13 Attempt at arc_augmented_points(), changing some behaviour of arc_augmente_poly()
 2022_07_03 Adding alternative resolution control to arc_pts (@introscopia's suggestion)
+           In arc_augmented_poly & points: Fixing/changing the no radius list and no radius kwarg
+           (now it means radius=0) and WIP still struggling with flipping and radius reduction behavior 
 """
 
 from warnings import warn
@@ -330,8 +333,8 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     assert op_list, 'No points were provided.'
     assert not ('radius' in kwargs and or_list),\
            "You can't use a radii list and a radius kwarg together."
-    if 'radius' in kwargs and or_list == None:
-        or_list = [kwargs.pop('radius')] * len(op_list)
+    if or_list is None:
+        or_list = [kwargs.pop('radius', 0)] * len(op_list)
     r2_list = list(or_list)
     assert len(op_list) == len(r2_list),\
         'Number of points and radii provided not the same.'
@@ -366,7 +369,7 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         p0 = p_list[i0]
         i2 = (i1 + 1) % len(p_list)
         p2 = p_list[i2]
-        a = triangle_area(p0, p1, p2) / 1000.
+        a = triangle_area(p0, p1, p2) / 1000.0
         if auto_flip and a < 0:
             r_list[i1] = -r_list[i1]
             if gradual_flip:
@@ -443,13 +446,14 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
     assert op_list, 'No points were provided.'
     assert not ('radius' in kwargs and or_list),\
         "You can't use a radii list and a radius kwarg together."
-    if 'radius' in kwargs and or_list == None:
-        or_list = [kwargs.pop('radius')] * len(op_list)
+    if or_list is None:
+        or_list = [kwargs.pop('radius', 0)] * len(op_list)
     r2_list = list(or_list)
     assert len(op_list) == len(r2_list),\
         'Number of points and radii provided not the same.'
     auto_flip = kwargs.pop('auto_flip', True)
-    gradual_flip = kwargs.pop('gradual_flip', False)  # experimentas    
+    gradual_flip = kwargs.pop('gradual_flip', False) 
+    reduce_both = kwargs.pop('reduce_both', True)
     pts_list = []
     # remove overlapping adjacent points
     p_list, r_list = [], []
@@ -470,7 +474,7 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
         p0 = p_list[i0]
         i2 = (i1 + 1) % len(p_list)
         p2 = p_list[i2]
-        a = triangle_area(p0, p1, p2) / 1000
+        a = triangle_area(p0, p1, p2) / 1000.0
         if auto_flip and a < 0:
             r_list[i1] = -r_list[i1]
             if gradual_flip:
@@ -479,7 +483,7 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
-        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2)
+        r_list[i1], r_list[i2] = reduce_radius(p1, p2, r1, r2, reduce_both=reduce_both)
     # calculate the tangents
     a_list = []
     for i1, p1 in enumerate(p_list):
