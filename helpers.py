@@ -10,6 +10,7 @@
 # 2021_03_05 imgext() -> has_img_ext()
 # 2021_06_08 Added lerp_tuple()
 # 2022_06_13 Added save_png_with_src() (for py5 only)
+# 2022_07_14 If on py5 imported mode, save_png_with_src now tries folder+'.py'
 
 try:
     lerp
@@ -119,10 +120,12 @@ def save_png_with_src(output=None, *args, **kwargs):
     import PIL
     import py5
     from datetime import datetime
+    from os.path import basename, join
     import __main__ as m
-    
     src_file = m.__file__
-    
+    if basename(src_file) == 'run_sketch.py':
+        file_path = py5.sketch_path()
+        src_file = join(file_path, basename(file_path) + '.py')
     add_timestamp = kwargs.pop('timestamp', True) 
     if add_timestamp:
         ts = str(datetime.now())[:19].replace(' ', '_').replace(':', '-')    
@@ -149,4 +152,3 @@ def save_png_with_src(output=None, *args, **kwargs):
     # read back and print...
     # target_image = PIL.Image.open(output)
     # print(target_image.info['code'])
-
