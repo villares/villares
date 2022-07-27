@@ -11,6 +11,7 @@
 # 2021_06_08 Added lerp_tuple()
 # 2022_06_13 Added save_png_with_src() (for py5 only)
 # 2022_07_14 If on py5 imported mode, save_png_with_src now tries folder+'.py'
+# 2022_07_27 Added datetimestamp() & tweaks to save_png_with_src
 
 try:
     lerp
@@ -66,7 +67,7 @@ imgext = has_image_ext
 def sketch_name():
     """Return sketch name."""
     from os import path
-    sketch = sketchPath()
+    sketch = sketchPath()  # will use py5.sketch_path() if in py5
     return path.basename(sketch)
 
 def random_hue_saturated(bright=None):
@@ -116,28 +117,51 @@ def memoize(f):
         return memo[args]
     return memoized_func
 
-def save_png_with_src(output=None, *args, **kwargs):
-    import PIL
-    import py5
+def datetimestamp(time_prefix='t', time_only=False, date_only=False):
+    """
+    returns 'YYYY_MM_DDtHH-MM-SS' 
+    time_only=True returns 'tHH-MM-SS'
+    date_only=True returns 'YYYY_MM_DD' (time_only will override date_only)
+    time_prefix keyword argument changes 't' to something else
+    """
     from datetime import datetime
+    dtnow = str(datetime.now())[:19]
+    dts = dtnow.replace('-', '_').replace(' ', time_prefix).replace(':', '-')   
+    if time_only:
+        return dts[10:]
+    elif date_only:
+        return dts[:10]
+    else:
+        return dts
+
+def save_png_with_src(output=None, *args, **kwargs):
+    import py5
+    import PIL
     from os.path import basename, join
     import __main__ as m
     src_file = m.__file__
     if basename(src_file) == 'run_sketch.py':
         file_path = py5.sketch_path()
         src_file = join(file_path, basename(file_path) + '.py')
-    add_timestamp = kwargs.pop('timestamp', True) 
-    if add_timestamp:
-        ts = str(datetime.now())[:19].replace(' ', '_').replace(':', '-')    
-        if output is None:
-            output = ts + '.png'
-        else:
-            output = ts + '_' + output
+
+    add_ts = kwargs.pop('timestamp', False) 
+    add_dts = kwargs.pop('datetimestamp', True) 
+    if add_ts:  # timestamp True overrides datetimestamp True
+        stamp = datetimestamp(time_prefix='', time_only=True)
+    elif add_dts:
+        stamp = datetimestamp(time_prefix='v')
     else:
-        raise ValueError(
-            'You can\'t disable the timestamp '
-            'if you don\'t provide a filename for output'
-            )
+        stamp = None
+        
+    if output is None and stamp is None:
+        output = basename(py5.sketch_path()) + '.png'
+    elif output is None:
+        output = stamp + '.png'
+    else:
+        if not output.endswith('.png'):
+            output += '.png'
+        if stamp:
+            output = stamp + '_' + output
     
     with open(src_file) as f:
         src = ''.join(f.read())
