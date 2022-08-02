@@ -137,12 +137,14 @@ def datetimestamp(time_prefix='t', time_only=False, date_only=False):
 def save_png_with_src(output=None, *args, **kwargs):
     import py5
     import PIL
+    import glob
     from os.path import basename, join
     import __main__ as m
     src_file = m.__file__
     if basename(src_file) == 'run_sketch.py':
-        file_path = py5.sketch_path()
-        src_file = join(file_path, basename(file_path) + '.py')
+        src_path = join(py5.sketch_path(), '*.py')
+        src_file = glob.glob(str(src_path))[0]
+        #src_file = join(file_path, basename(file_path) + '.py')
 
     add_ts = kwargs.pop('timestamp', False) 
     add_dts = kwargs.pop('datetimestamp', True) 
