@@ -3,16 +3,15 @@
 
 > This animation is made with points in a Python collections.deque data structure, added by dragging the mouse (code shown bellow)
 - 🔭 I'm currently working on a PhD at Unicamp
-- 🌱 I should be talking less and concentrating
-- 👯 I’m looking to collaborate on open resources to teach programming in a visual context
+- 🌱 I should be talking less and concentrating, but...
 - 💬 Ask me about drawing with Python! 
     - Check out [py5](https://py5coding.org) and [pyp5js](berinhard.github.io/pyp5js/pyodide/), they bring the Processing drawing infrastructure to Python!
+- 👯 I’m looking to collaborate on open resources to teach programming in a visual context
+    - If you find the things I share here usefull, consider supporting my work at [gumroad.com/villares](https://gumroad.com/villares), sending a donation [via PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=HCGAKACDMVNV2), or if you are in Brazil, mande um PIX:`46c37783-5edb-4f1c-b3a8-1309db11488c`!!!
 - 📫 How to reach me: [Mastodon](ciberlandia.pt/@villares) or [Email](https://abav.lugaralgum.com/contato)
-    - If you find the things I share here usefull, consider supporting my work at [gumroad.com/villares](https://gumroad.com/villares),
-    - sending a donation [via PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=HCGAKACDMVNV2)
-    - ou ainda, pode me mandar um PIX:`46c37783-5edb-4f1c-b3a8-1309db11488c`
 - 😄 Pronouns: he/him
 - ⚡ Fun fact: I actually use this repo to store some helper [code](https://github.com/villares/villares) I use in my drawings.
+    - I try to make a new drawing with code everyday, and I put the results at  [skech-a-day](https://abav.lugaralgum.com/sketch-a-day)
 
 ```python
 from collections import deque  # a double-ended queue
