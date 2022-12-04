@@ -6,10 +6,11 @@
 - 🌱 I should be talking less and concentrating
 - 👯 I’m looking to collaborate on open resources to teach programming in a visual context
 - 💬 Ask me about drawing with Python! 
-    - Check out [py5](https://py5coding.org), it brings in the Processing drawing infrastructure!
-- 📫 How to reach me: [twitter.com/villares](https://twitter.com/villares)
-    - If you find the things I share here usefull, consider supporting my work at [gumroad.com/villares](https://gumroad.com/villares)
-    - Pode me mandar um PIX: `46c37783-5edb-4f1c-b3a8-1309db11488c`
+    - Check out [py5](https://py5coding.org) and [pyp5js](berinhard.github.io/pyp5js/pyodide/), they bring the Processing drawing infrastructure to Python!
+- 📫 How to reach me: [Mastodon](ciberlandia.pt/@villares) or [Email](https://abav.lugaralgum.com/contato)
+    - If you find the things I share here usefull, consider supporting my work at [gumroad.com/villares](https://gumroad.com/villares),
+    - sending a donation [via PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=HCGAKACDMVNV2)
+    - ou ainda, pode me mandar um PIX:`46c37783-5edb-4f1c-b3a8-1309db11488c`
 - 😄 Pronouns: he/him
 - ⚡ Fun fact: I actually use this repo to store some helper [code](https://github.com/villares/villares) I use in my drawings.
 
