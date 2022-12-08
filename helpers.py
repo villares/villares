@@ -136,6 +136,11 @@ def datetimestamp(time_prefix='t', time_only=False, date_only=False):
         return dts
 
 def save_png_with_src(output=None, *args, **kwargs):
+    """
+    output=None -> folder name used
+    datetimestamp=True
+    timestamp=False
+    """
     import py5
     import PIL.PngImagePlugin
     import glob
