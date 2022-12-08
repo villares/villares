@@ -213,10 +213,11 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
         return (p0[0] + p1[0]) * 0.5, (p0[1] + p1[1]) * 0.5
     
     if open_poly:
-        p0_p1_p2_r_sequence = zip(p_list[:-1],
-            [p_list[-1]] + p_list[:-2],
-            [p_list[-2]] + [p_list[-1]] + p_list[:-3],
-            [r_list[-1]] + r_list[:-2])
+        p_list = p_list[1:] + [p_list[0]]
+        p0_p1_p2_r_sequence = list(zip(p_list,
+            [p_list[-1]] + p_list[:-1],
+            [p_list[-2]] + [p_list[-1]] + p_list[:-2],
+            [r_list[-1]] + r_list[:-1]))
     else:
         p0_p1_p2_r_sequence = zip(p_list,
             [p_list[-1]] + p_list[:-1],
@@ -224,9 +225,18 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
             [r_list[-1]] + r_list[:-1])
     if draw_shape:
         beginShape()
-        for p0, p1, p2, r in p0_p1_p2_r_sequence:
-            arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
-                       arc_func=arc_func, **kwargs)
+        if open_poly:
+            p0, first, p2, r = p0_p1_p2_r_sequence[0]
+            vertex(*first)
+            for p0, p1, p2, r in p0_p1_p2_r_sequence[1:-1]:
+                arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
+                        arc_func=arc_func, **kwargs)
+            p0, last, p2, r = p0_p1_p2_r_sequence[-1]
+            vertex(*last)
+        else:    
+            for p0, p1, p2, r in p0_p1_p2_r_sequence:
+                arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
+                        arc_func=arc_func, **kwargs)
     else:
         pts_list = []
         for p0, p1, p2, r in p0_p1_p2_r_sequence:
