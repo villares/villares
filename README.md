@@ -1,5 +1,7 @@
 <!--**username/username** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.-->
-<img src="hello.gif">
+
+
+![animação Hello World](hello.gif)
 
 > This animation is made with points in a Python collections.deque data structure, added by dragging the mouse (code shown bellow)
 - 🔭 I'm currently working on a PhD at Unicamp.
