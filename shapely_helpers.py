@@ -18,7 +18,7 @@ debug = False
 def draw_shapely(shps, sketch: py5.Sketch=None):
     """
     Draw most shapely objects with py5.
-    It will use the "current sketch" as default.
+    This will use the "current" py5 sketch as default.
     """
     s = sketch or py5.get_current_sketch()
     try:
@@ -28,28 +28,27 @@ def draw_shapely(shps, sketch: py5.Sketch=None):
     except TypeError:
         pass
             
-    if isinstance(shps, (MultiPolygon, MultiLineString, MultiPoint)):
+    if isinstance(shps, (MultiPolygon, MultiLineString)):
         if debug: print(shps)
         for shp in shps.geoms:
             draw_shapely(shp)
     elif isinstance(shps, Polygon):
         if debug: print(shps)
         with s.begin_closed_shape():
-            for x, y in shps.exterior.coords:
-                s.vertex(x, y)
+            s.vertices(shps.exterior.coords)
             for hole in shps.interiors:
                 with s.begin_contour():
-                    for x, y in hole.coords:
-                        s.vertex(x, y)
+                    s.vertices(hole.coords)
     elif isinstance(shps, LineString):
         if debug: print(shps)
         with s.push_style():
             s.no_fill()
             with s.begin_shape():
-                for x, y in shps.coords:
-                    s.vertex(x, y)
+                s.vertices(shps.coords)
     elif isinstance(shps, Point):
-        s.point(*shps.coords[0])
+        s.point(tuple(shps.coords)[0]) # yeah shps.coords for a lone Point is a CoordinateSequence.
+    elif isinstance(shps, MultiPoint):
+        s.points(tuple(p.coords)[0] for p in shps.geoms)
     else:
         print(f"Unable to draw: {shps}")
 
@@ -103,7 +102,7 @@ def point_over_line(px, py, lax, lay, lbx, lby,
     return (pa + pb) <= ab + tolerance
 
 def points_are_colinear(ax, ay, bx, by, cx, cy,
-                        tolerance=EPSILON):
+                        tolerance=0.1):
     """
     Test for colinearity by calculating the area
     of a triangle formed by the 3 points.
@@ -150,7 +149,7 @@ def pairwise(iterable):
 
 def min_max(points):
     """
-    Return two tuples or PVectors with the most extreme coordinates,
+    Return two tuples with the most extreme coordinates,
     resulting in "bounding box" corners.
     """
     coords = tuple(zip(*points))
