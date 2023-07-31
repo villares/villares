@@ -13,8 +13,6 @@ from shapely import Point, MultiPoint
 
 import py5
 
-debug = False
-
 def draw_shapely(shps, sketch: py5.Sketch=None):
     """
     Draw most shapely objects with py5.
@@ -29,18 +27,15 @@ def draw_shapely(shps, sketch: py5.Sketch=None):
         pass
             
     if isinstance(shps, (MultiPolygon, MultiLineString)):
-        if debug: print(shps)
         for shp in shps.geoms:
             draw_shapely(shp)
     elif isinstance(shps, Polygon):
-        if debug: print(shps)
         with s.begin_closed_shape():
             s.vertices(shps.exterior.coords)
             for hole in shps.interiors:
                 with s.begin_contour():
                     s.vertices(hole.coords)
     elif isinstance(shps, LineString):
-        if debug: print(shps)
         with s.push_style():
             s.no_fill()
             with s.begin_shape():
