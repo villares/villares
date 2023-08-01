@@ -10,6 +10,7 @@ Helpers to use shapely with py5
 from shapely import Polygon, MultiPolygon
 from shapely import LineString, MultiLineString
 from shapely import Point, MultiPoint
+from shapely import GeometryCollection
 
 import py5
 
@@ -26,7 +27,7 @@ def draw_shapely(shps, sketch: py5.Sketch=None):
     except TypeError:
         pass
             
-    if isinstance(shps, (MultiPolygon, MultiLineString)):
+    if isinstance(shps, (MultiPolygon, MultiLineString, GeometryCollection)):
         for shp in shps.geoms:
             draw_shapely(shp)
     elif isinstance(shps, Polygon):
