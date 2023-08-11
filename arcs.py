@@ -19,6 +19,7 @@ From https://github.com/villares/villares/blob/main/arcs.py
 2022_07_03 Adding alternative resolution control to arc_pts (@introscopia's suggestion)
            In arc_augmented_poly & points: Fixing/changing the no radius list and no radius kwarg
            (now it means radius=0) and WIP still struggling with flipping and radius reduction behavior 
+2023_08_05 WIP py5 vertices optimization and some other refactoring
 """
 
 from warnings import warn
@@ -32,13 +33,16 @@ except ModuleNotFoundError:
 try:
     EPSILON
     remap = map
+    def vertices(pts):
+        for p in pts:
+            vertex(*p)
 except NameError:
     from py5 import *
     beginShape = begin_shape
     endShape = end_shape
     bezierVertex = bezier_vertex
     textSize = text_size
-    
+
 DEBUG, TEXT_HEIGHT = False, 12  # For debug
 
 # For use with half_circle and quarter_circle functions
@@ -154,12 +158,14 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
           2 "naked" like normal, but without beginShape() and
              endShape() for use inside a larger PShape.
     """
-    vertex_func = vertex_func or vertex
     if mode == 0:
         beginShape()
     vertex_pts = arc_pts(cx, cy, w, h, start_angle, end_angle, num_points)
-    for vx, vy in vertex_pts:
-        vertex_func(vx, vy)
+    if vertex_func is None or vertex_fun == vertex:
+        vertices(vertex_pts)
+    else:
+        for vx, vy in vertex_pts:
+            vertex_func(vx, vy)
     if mode == 0:
         endShape()
 
@@ -223,30 +229,27 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
             [p_list[-1]] + p_list[:-1],
             [p_list[-2]] + [p_list[-1]] + p_list[:-2],
             [r_list[-1]] + r_list[:-1])
-    if draw_shape:
-        beginShape()
-        if open_poly:
-            p0, first, p2, r = p0_p1_p2_r_sequence[0]
-            vertex(*first)
-            for p0, p1, p2, r in p0_p1_p2_r_sequence[1:-1]:
-                arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
-                        arc_func=arc_func, **kwargs)
-            p0, last, p2, r = p0_p1_p2_r_sequence[-1]
-            vertex(*last)
-        else:    
-            for p0, p1, p2, r in p0_p1_p2_r_sequence:
-                arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
-                        arc_func=arc_func, **kwargs)
-    else:
+    if not draw_shape:
         pts_list = []
         for p0, p1, p2, r in p0_p1_p2_r_sequence:
             pts_list.extend(arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
                                        arc_func=arc_func, **kwargs))
         return pts_list
-    # then, if draw_shape:
+    # else, if draw_shape:
+    beginShape()
     if open_poly:
+        p0, first, p2, r = p0_p1_p2_r_sequence[0]
+        vertex(*first)
+        for p0, p1, p2, r in p0_p1_p2_r_sequence[1:-1]:
+            arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
+                    arc_func=arc_func, **kwargs)
+        p0, last, p2, r = p0_p1_p2_r_sequence[-1]
+        vertex(*last)
         endShape()       
-    else:
+    else:    
+        for p0, p1, p2, r in p0_p1_p2_r_sequence:
+            arc_corner(p1, mid(p0, p1), mid(p1, p2), r,
+                    arc_func=arc_func, **kwargs)
         endShape(CLOSE)
 
 def arc_corner(pc, p1, p2, r, **kwargs):
