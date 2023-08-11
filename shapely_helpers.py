@@ -8,7 +8,7 @@ Helpers to use shapely with py5
 """
 
 from shapely import Polygon, MultiPolygon
-from shapely import LineString, MultiLineString
+from shapely import LineString, MultiLineString, LinearRing
 from shapely import Point, MultiPoint
 from shapely import GeometryCollection
 
@@ -36,7 +36,8 @@ def draw_shapely(shps, sketch: py5.Sketch=None):
             for hole in shps.interiors:
                 with s.begin_contour():
                     s.vertices(hole.coords)
-    elif isinstance(shps, LineString):
+    elif isinstance(shps, (LineString, LinearRing)):
+        # no need to uses begin_closed_shape() because LinearRing repeats the start/end coordinates
         with s.push_style():
             s.no_fill()
             with s.begin_shape():
