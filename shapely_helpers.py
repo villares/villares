@@ -5,12 +5,19 @@ From https://github.com/villares/villares/blob/main/shapely_helpers.py
 Helpers to use shapely with py5
 
 2023-07-31 Getting started with the drawing function.
+2023-08-28 Testing for iterables last is less costly. Added GeoDataFrame case. Improved Point(s)
 """
 
 from shapely import Polygon, MultiPolygon
 from shapely import LineString, MultiLineString, LinearRing
 from shapely import Point, MultiPoint
 from shapely import GeometryCollection
+
+try:
+    from geopandas import GeoDataFrame
+    geodataframe_imported = True
+except ImportError:
+    geodataframe_imported = False
 
 import py5
 
@@ -20,13 +27,6 @@ def draw_shapely(shps, sketch: py5.Sketch=None):
     This will use the "current" py5 sketch as default.
     """
     s = sketch or py5.get_current_sketch()
-    try:
-        for shp in shps:
-            draw_shapely(shp)
-        return
-    except TypeError:
-        pass
-            
     if isinstance(shps, (MultiPolygon, MultiLineString, GeometryCollection)):
         for shp in shps.geoms:
             draw_shapely(shp)
@@ -43,11 +43,28 @@ def draw_shapely(shps, sketch: py5.Sketch=None):
             with s.begin_shape():
                 s.vertices(shps.coords)
     elif isinstance(shps, Point):
-        s.point(tuple(shps.coords)[0]) # yeah shps.coords for a lone Point is a CoordinateSequence.
+        s.point(shps.x, shps.y) 
     elif isinstance(shps, MultiPoint):
-        s.points(tuple(p.coords)[0] for p in shps.geoms)
+        s.points((p.x, p.y) for p in shps.geoms)
+    elif geodataframe_imported and isinstance(shps, GeoDataFrame):
+        for shp in shps.geometry:
+                draw_shapely(shp)
     else:
-        print(f"Unable to draw: {shps}")
+        try:
+            for shp in shps:
+                draw_shapely(shp)
+        except TypeError as e:
+            print(f"Unable to draw: {shps}")
+
+if __name__ == '__main__':
+    def setup():
+        global p
+        py5.size(400, 400)
+        py5.stroke_weight(10)
+        mp = MultiPoint([(200, 200), (100, 100), (200, 300)])
+        draw_shapely(mp)
+        
+    py5.run_sketch(block=False)
 
 '''
 # Maybe I'll pick some ideas/functions from line_geometry.py and reimplement with shapely
