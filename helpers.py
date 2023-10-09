@@ -13,7 +13,7 @@
 # 2022_07_14 If on py5 imported mode, save_png_with_src now tries folder+'.py'
 # 2022_07_27 Added datetimestamp() & tweaks to save_png_with_src
 # 2022_08_03 Added get_arduino() based on PyFirmata (for py5 only)
-# 2023_08_15 TODO check if I can use __file__ for save_png_with_src
+# 2023_08_15 DONE checket I can't use __file__ inside save_png_with_src
 
 try:
     lerp
@@ -148,11 +148,13 @@ def save_png_with_src(output=None, *args, **kwargs):
     from os.path import basename, join
     import __main__ as m
     src_file = m.__file__
+    print(src_file)
     if basename(src_file) == 'run_sketch.py':
         src_path = join(py5.sketch_path(), '*.py')
         src_file = glob.glob(str(src_path))[0]
         #src_file = join(file_path, basename(file_path) + '.py')
-    
+    drop_alpha = kwargs.pop('drop_alpha', False)
+    kwargs['drop_alpha'] = drop_alpha
     add_ts = kwargs.pop('timestamp', False) 
     add_dts = kwargs.pop('datetimestamp', True) 
     if add_ts:  # timestamp True overrides datetimestamp True
