@@ -25,17 +25,22 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2022_03_02 Make it work with py5
 2022_04_14 Adding to point_inside_poly(x, y, poly) a (pt, poly) arguments option
 2022_06_13 Adding simplified_points()
+2023_10_15 WIP Making py5 names the default. TODO: deal with PVectors (remove?)
 """
 
+# The following block is for compatibility with legacy Processing Python mode
 from __future__ import division
-
 try:
-    EPSILON
+    begin_shape = beginShape
+    end_shape = endShape
+    create_shape = createShape
+    PShape.add_child = PShape.addChild
+    def vertices(pts):
+        for p in pts:
+            vertex(*p)
 except NameError:
     from py5 import *
-    beginShape = begin_shape
-    endShape = end_shape
-    bezierVertex = bezier_vertex
+
 
 class Line():
 
@@ -74,7 +79,7 @@ class Line():
         function = kwargs.pop('function', None)
         ps = kwargs.get('ps', None)
         if not function and ps:
-            ps.addChild(createShape(LINE,
+            ps.add_child(create_shape(LINE,
                                     self[0][0], self[0][1],
                                     self[1][0], self[1][1]))
         elif not function:
@@ -210,30 +215,20 @@ def draw_poly(points, holes=None, closed=True):
         else:
             return 0
 
-    beginShape()  # inicia o PShape
-    if len(tuple(points[0])) == 2:
-        for p in points:
-            vertex(p[0], p[1])
-    else:
-        for p in points:
-            vertex(*p)  # desempacota pontos em 3d
-
+    begin_shape()  # inicia o PShape
+    vertices(points)
     holes = holes or []  # equivale a: holes if holes else []
     if holes and depth(holes) == 2:  # sequência única de pontos
         holes = (holes,)     # envolve em um tupla
     for hole in holes:  # para cada furo
         beginContour()  # inicia o furo
-        for p in hole:
-            if len(p) == 2 or p[2] == 0:
-                vertex(p[0], p[1])
-            else:
-                vertex(*p)
+        vertices(hole)
         endContour()  # final e um furo
     # encerra o PShape
     if closed:
-        endShape(CLOSE)
+        end_shape(CLOSE)
     else:
-        endShape()
+        end_shape()
 
 poly = draw_poly
 
@@ -447,7 +442,7 @@ def hatch_poly(*args, **kwargs):
     function = kwargs.pop('function', None)
     base = kwargs.pop('base', True)
     odd_function = kwargs.pop('odd_function', False)
-    kwargs['ps'] = ps = (createShape(GROUP) if kwargs.get('ps', False)
+    kwargs['ps'] = ps = (create_shape(GROUP) if kwargs.get('ps', False)
                          else False)
     num = int(d / spacing)
     rr = [rotate_point(x, y, angle, cx, cy)
