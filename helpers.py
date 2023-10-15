@@ -13,11 +13,13 @@
 # 2022_07_14 If on py5 imported mode, save_png_with_src now tries folder+'.py'
 # 2022_07_27 Added datetimestamp() & tweaks to save_png_with_src
 # 2022_08_03 Added get_arduino() based on PyFirmata (for py5 only)
-# 2023_08_15 DONE checket I can't use __file__ inside save_png_with_src
+# 2023_08_15 DONE checked I can't use __file__ inside save_png_with_src
+
 
 try:
     lerp
 except NameError:
+    from pathlib import Path
     from py5 import lerp
     from py5 import color
     from py5 import color_mode as colorMode
@@ -59,12 +61,23 @@ def lista_imagens(dir=None):
     return f_list
 
 def has_image_ext(file_name):
-        # extensões dos formatos de imagem que o Processing aceita!
-        valid_ext = ('jpg', 'png', 'jpeg', 'gif', 'tif', 'tga')
-        file_ext = file_name.split('.')[-1]
-        return file_ext.lower() in valid_ext
+    """
+    Return True if file_name ends with
+    one of the valid_extensions.
+    """
+    valid_extensions = (
+        'jpg',
+        'png',
+        'jpeg',
+        'gif',
+        'tif',
+        'tga',
+        'svg',
+    )
+    extension = Path(file_name).suffix.lower()[1:]
+    return extension in valid_extensions
 
-imgext = has_image_ext 
+is_image_ext = imgext = has_image_ext 
 
 def sketch_name():
     """Return sketch name."""
