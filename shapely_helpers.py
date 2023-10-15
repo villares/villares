@@ -56,7 +56,7 @@ def draw_shapely(shps, sketch: py5.Sketch=None):
         except TypeError as e:
             print(f"Unable to draw: {shps}")
 
-def polys_from_text(words, font, alternate_spacing=False):
+def polys_from_text(words, font, leading=None, alternate_spacing=False):
     """
     Produce a list of shapely Polygons (with holes!) from a string.
     New-line chars will try to move text to a new line.
@@ -65,13 +65,14 @@ def polys_from_text(words, font, alternate_spacing=False):
     spacing from py5.text_width() for each glyph, it can be
     too spaced, but good for monospaced font alignment.
     """
+    leading = leading or font.get_size()
     py5.text_font(font)
     space_width = py5.text_width(' ')
     results = []
     x_offset = y_offset = 0
     for c in words:
         if c == '\n':
-            y_offset += font.get_size()
+            y_offset += leading
             x_offset = 0  # assuming left aligned text...
             continue
         glyph_pt_lists = [[]]
