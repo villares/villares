@@ -6,6 +6,7 @@ Helpers to use shapely with py5
 
 2023-07-31 Getting started with the drawing function.
 2023-08-28 Testing for iterables last is less costly. Added GeoDataFrame case. Improved Point(s)
+2023-10-09 Added polys_from_text() and its dependency process_glyphs
 """
 
 from shapely import Polygon, MultiPolygon
