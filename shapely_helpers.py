@@ -57,6 +57,8 @@ def draw_shapely(shps, sketch: py5.Sketch=None):
         except TypeError as e:
             print(f"Unable to draw: {shps}")
 
+draw_shapely_objs = draw_shapely  # para retro-compatibilidade
+
 def polys_from_text(words, font, leading=None, alternate_spacing=False):
     """
     Produce a list of shapely Polygons (with holes!) from a string.
