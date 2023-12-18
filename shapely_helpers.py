@@ -6,6 +6,7 @@ Helpers to use shapely with py5
 
 2023-07-31 Getting started with the drawing function.
 2023-08-28 Testing for iterables last is less costly. Added GeoDataFrame case. Improved Point(s)
+2023-10-09 Added polys_from_text() and its dependency process_glyphs
 """
 
 from shapely import Polygon, MultiPolygon
@@ -55,6 +56,8 @@ def draw_shapely(shps, sketch: py5.Sketch=None):
                 draw_shapely(shp)
         except TypeError as e:
             print(f"Unable to draw: {shps}")
+            
+draw_shapely_objs = draw_shapely  # para retro-compatibilidade
 
 def polys_from_text(words, font: py5.Py5Font, leading=None, alternate_spacing=False):
     """
