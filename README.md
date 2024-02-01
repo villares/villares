@@ -1,6 +1,5 @@
 <!--**username/username** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.-->
 
-
 ![animação Hello World](hello.gif)
 
 > This animation is made with points in a Python collections.deque data structure, added by dragging the mouse (code shown bellow)
@@ -10,7 +9,7 @@
     - Check out [py5](https://py5coding.org) and [pyp5js](berinhard.github.io/pyp5js/pyodide/), they bring in the vocabulary from Processing & P5js!
     - I collect tools for teaching Python with visual output [here](https://github.com/villares/Resources-for-teaching-programming).
 - 👯 I’d like to collaborate on open resources to teach programming in a visual context.
-    - If you find the things I share here usefull, consider supporting my work at [gumroad.com/villares](https://gumroad.com/villares), sending a donation [via PayPal](https://www.paypal.com/donate/?hosted_button_id=5B4MZ78C9J724), or if you are in Brazil, mande um PIX:`46c37783-5edb-4f1c-b3a8-1309db11488c`!!!
+    - If you find the things I share here usefull, consider supporting my work using [**liberapay.com/villares**](https://liberapay.com/villares/),  [gumroad.com/villares](https://gumroad.com/villares), sending a donation [via PayPal](https://www.paypal.com/donate/?hosted_button_id=5B4MZ78C9J724), or if you are in Brazil, "mande um PIX": chave aleatória `46c37783-5edb-4f1c-b3a8-1309db11488c`!!!
 - 📫 How to reach me: [Mastodon](ciberlandia.pt/@villares) or [Email](https://abav.lugaralgum.com/contato).
 - 😄 Pronouns: he/him
 - ⚡ Fun fact: I actually use this repo to store some helper [code](https://github.com/villares/villares) I use in my drawings.
