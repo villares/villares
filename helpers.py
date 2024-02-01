@@ -14,7 +14,7 @@
 # 2022_07_27 Added datetimestamp() & tweaks to save_png_with_src
 # 2022_08_03 Added get_arduino() based on PyFirmata (for py5 only)
 # 2023_08_15 DONE checked I can't use __file__ inside save_png_with_src
-
+# 2024-02-01 TODO (re)move things to image_helpers, fix or delete adicionar_imagens
 
 try:
     lerp
@@ -27,57 +27,57 @@ except NameError:
     from py5 import sketch_path as sketchPath
     
 
-def adicionar_imagens(selection, imagens=None):
-    if imagens is None:
-        imagens = []
-    if selection == None:
-        print("Seleção cancelada.")
-    else:
-        dir_path = selection.getAbsolutePath()
-        print("Pasta selecionada: " + dir_path)
-        for file_name, file_path in lista_imagens(dir_path):
-            img = loadImage(file_path)
-            img_name = file_name.split('.')[0]
-            print("imagem " + img_name + " carregada.")
-            imagens.append((img_name, img))
-        print('Número de imagens: ' + str(len(imagens)))
-    return imagens
-
-def lista_imagens(dir=None):
-    """
-    Devolve uma a lista de tuplas com os nomes dos arquivos de imagem e os caminhos
-    completos para cada uma das images na pasta `dir` ou na pasta /data/ do sketch.
-    Requer a função has_image_ext() para decidir quais extensões aceitar.
-    """
-    from os import listdir
-    from os.path import isfile, join
-    data_path = dir or sketchPath('data')  # will return error later if no data folder!
-    try:
-        f_list = [(f, join(data_path, f)) for f in listdir(data_path)
-                  if isfile(join(data_path, f)) and has_image_ext(f)]
-    except Exception as e:
-        print("Erro ({0}): {1}".format(e.errno, e.strerror))
-        return []
-    return f_list
-
-def has_image_ext(file_name):
-    """
-    Return True if file_name ends with
-    one of the valid_extensions.
-    """
-    valid_extensions = (
-        'jpg',
-        'png',
-        'jpeg',
-        'gif',
-        'tif',
-        'tga',
-        'svg',
-    )
-    extension = Path(file_name).suffix.lower()[1:]
-    return extension in valid_extensions
-
-is_image_ext = imgext = has_image_ext 
+# def adicionar_imagens(selection, imagens=None):
+#     if imagens is None:
+#         imagens = []
+#     if selection == None:
+#         print("Seleção cancelada.")
+#     else:
+#         dir_path = selection.getAbsolutePath()
+#         print("Pasta selecionada: " + dir_path)
+#         for file_name, file_path in lista_imagens(dir_path):
+#             img = loadImage(file_path)
+#             img_name = file_name.split('.')[0]
+#             print("imagem " + img_name + " carregada.")
+#             imagens.append((img_name, img))
+#         print('Número de imagens: ' + str(len(imagens)))
+#     return imagens
+# 
+# def lista_imagens(dir=None):
+#     """
+#     Devolve uma a lista de tuplas com os nomes dos arquivos de imagem e os caminhos
+#     completos para cada uma das images na pasta `dir` ou na pasta /data/ do sketch.
+#     Requer a função has_image_ext() para decidir quais extensões aceitar.
+#     """
+#     from os import listdir
+#     from os.path import isfile, join
+#     data_path = dir or sketchPath('data')  # will return error later if no data folder!
+#     try:
+#         f_list = [(f, join(data_path, f)) for f in listdir(data_path)
+#                   if isfile(join(data_path, f)) and has_image_ext(f)]
+#     except Exception as e:
+#         print("Erro ({0}): {1}".format(e.errno, e.strerror))
+#         return []
+#     return f_list
+# 
+# def has_image_ext(file_name):
+#     """
+#     Return True if file_name ends with
+#     one of the valid_extensions.
+#     """
+#     valid_extensions = (
+#         'jpg',
+#         'png',
+#         'jpeg',
+#         'gif',
+#         'tif',
+#         'tga',
+#         'svg',
+#     )
+#     extension = Path(file_name).suffix.lower()[1:]
+#     return extension in valid_extensions
+# 
+# is_image_ext = imgext = has_image_ext 
 
 def sketch_name():
     """Return sketch name."""
