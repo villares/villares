@@ -248,14 +248,19 @@ def get_arduino(port=None):
     util.Iterator(arduino).start()
     for a in range(6):  # A0 A1 A2 A3 A4 A5
         arduino.analog[a].enable_reporting()
-    arduino.analog_read = (lambda a: round(arduino.analog[a].read() * 1024)
-                           if arduino.analog[a].read() is not None
-                           else 0)
+    # monkeypatching PyFirmata with Procesing-like methods
+    arduino.analog_read = (
+        lambda a: round(arduino.analog[a].read() * 1024)
+                  if arduino.analog[a].read() is not None
+                  else 0
+        )
     digital_pin_dict = {d: arduino.get_pin(f'd:{d}:i')
                         for d in range(2, 14)}
     for d in digital_pin_dict.keys():
         digital_pin_dict[d].enable_reporting()
-    arduino.digital_read = (lambda d: digital_pin_dict[d].read()
-                            if digital_pin_dict[d].read() is not None
-                            else False)
+    arduino.digital_read = (
+        lambda d: digital_pin_dict[d].read()
+                  if digital_pin_dict[d].read() is not None
+                  else False
+        )
     return arduino
