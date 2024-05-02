@@ -246,7 +246,7 @@ def get_arduino(port=None):
     util.Iterator(arduino).start()
     for a in range(6):  # A0 A1 A2 A3 A4 A5
         arduino.analog[a].enable_reporting()
-    arduino.analog_read = (lambda a: round(arduino.analog[a].read() * 1023)
+    arduino.analog_read = (lambda a: round(arduino.analog[a].read() * 1024)
                            if arduino.analog[a].read() is not None
                            else 0)
     digital_pin_dict = {d: arduino.get_pin(f'd:{d}:i')
