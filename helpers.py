@@ -237,12 +237,14 @@ def get_arduino(port=None):
     elif port is None:
         print('\n'.join(f'{i}: {p}' for i, p in enumerate(ports)))
         port = len(ports) - 1
+        
     if isinstance(port, str):
         print(f'Trying to connect to port: {port}')
         arduino = Arduino(port)
     else:
         print(f'Trying to connect to port {port}: {ports[port]}')
         arduino = Arduino(ports[port])
+        
     util.Iterator(arduino).start()
     for a in range(6):  # A0 A1 A2 A3 A4 A5
         arduino.analog[a].enable_reporting()
