@@ -237,23 +237,30 @@ def get_arduino(port=None):
     elif port is None:
         print('\n'.join(f'{i}: {p}' for i, p in enumerate(ports)))
         port = len(ports) - 1
+        
     if isinstance(port, str):
         print(f'Trying to connect to port: {port}')
         arduino = Arduino(port)
     else:
         print(f'Trying to connect to port {port}: {ports[port]}')
         arduino = Arduino(ports[port])
+        
     util.Iterator(arduino).start()
     for a in range(6):  # A0 A1 A2 A3 A4 A5
         arduino.analog[a].enable_reporting()
-    arduino.analog_read = (lambda a: round(arduino.analog[a].read() * 1023)
-                           if arduino.analog[a].read() is not None
-                           else 0)
+    # monkeypatching PyFirmata with Procesing-like methods
+    arduino.analog_read = (
+        lambda a: round(arduino.analog[a].read() * 1024)
+                  if arduino.analog[a].read() is not None
+                  else 0
+        )
     digital_pin_dict = {d: arduino.get_pin(f'd:{d}:i')
                         for d in range(2, 14)}
     for d in digital_pin_dict.keys():
         digital_pin_dict[d].enable_reporting()
-    arduino.digital_read = (lambda d: digital_pin_dict[d].read()
-                            if digital_pin_dict[d].read() is not None
-                            else False)
+    arduino.digital_read = (
+        lambda d: digital_pin_dict[d].read()
+                  if digital_pin_dict[d].read() is not None
+                  else False
+        )
     return arduino
