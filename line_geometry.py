@@ -26,6 +26,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2022_04_14 Adding to point_inside_poly(x, y, poly) a (pt, poly) arguments option
 2022_06_13 Adding simplified_points()
 2023_10_15 WIP Making py5 names the default. TODO: deal with PVectors (remove?)
+2024_06_06 Made Py5Vectora/n alias to PVector for old sketches. Not tested.
 """
 
 # The following block is for compatibility with legacy Processing Python mode
@@ -35,12 +36,12 @@ try:
     end_shape = endShape
     create_shape = createShape
     PShape.add_child = PShape.addChild
+    Py5Vector = PVector
     def vertices(pts):
         for p in pts:
             vertex(*p)
 except NameError:
     from py5 import *
-
 
 class Line():
 
@@ -59,7 +60,7 @@ class Line():
             self.end = tuple(args[3:])
         else:
             raise ValueError(
-    "Requires 1 Line-like object, a pair of 2D or 3D tuples/PVectors, or x1, y1 [,z1], x2, y2 [,z2] coords."
+    "Requires 1 Line-like object, a pair of 2D or 3D tuples/Py5Vectors, or x1, y1 [,z1], x2, y2 [,z2] coords."
             )
 
     def __getitem__(self, i):
@@ -117,8 +118,8 @@ class Line():
 
     point_over = contains_point
 
-    def as_PVector(self):
-        return PVector(self[1][0], self[1][1]) - PVector(self[0][0], self[0][1])
+    def as_Py5Vector(self):
+        return Py5Vector(self[1][0], self[1][1]) - Py5Vector(self[0][0], self[0][1])
 
     def point_colinear(self, x, y, tolerance=EPSILON):
         return points_are_colinear(x, y,
@@ -133,7 +134,7 @@ def line_intersect(*args, **kwargs):
     2021_09_26 Adding intersection outside the segments. Also fixing bug when calling with 8 coords as arguments.
     2021_09_26 Removed line_a & line_b variables, rewrote ZeroDivision exception catching as a conditional check.
     """
-    as_PVector = kwargs.get('as_PVector', False)
+    as_Py5Vector = kwargs.get('as_Py5Vector', False)
     in_segment = kwargs.get('in_segment', True)
     
     if len(args) == 2:  # expecting 2 Line objects or 2 tuples of 2 point tuples.
@@ -156,7 +157,7 @@ def line_intersect(*args, **kwargs):
     if not in_segment or 0 <= uA <= 1 and 0 <= uB <= 1:
         x = x1 + uA * (x2 - x1)
         y = y1 + uA * (y2 - y1)
-        return PVector(x, y) if as_PVector else (x, y)
+        return Py5Vector(x, y) if as_Py5Vector else (x, y)
     else:
         return None
     
@@ -210,7 +211,7 @@ def draw_poly(points, holes=None, closed=True):
         """
         if (isinstance(seq, list) or
                 isinstance(seq, tuple) or
-                isinstance(seq, PVector)):
+                isinstance(seq, Py5Vector)):
             return 1 + max(depth(item) for item in seq)
         else:
             return 0
@@ -259,12 +260,12 @@ def pairwise(iterable):
 
 def min_max(points):
     """
-    Return two tuples or PVectors with the most extreme coordinates,
+    Return two tuples or Py5Vectors with the most extreme coordinates,
     resulting in "bounding box" corners.
     """
     coords = tuple(zip(*points))
-    if isinstance(points[0], PVector):
-        return PVector(*map(min, coords)), PVector(*map(max, coords))
+    if isinstance(points[0], Py5Vector):
+        return Py5Vector(*map(min, coords)), Py5Vector(*map(max, coords))
     else:
         return tuple(map(min, coords)), tuple(map(max, coords))
 
@@ -298,9 +299,9 @@ def rect_points(ox, oy, w, h, mode=CORNER, angle=None):
 
 def rotate_point(*args):
     """
-    point (tuple/PVector), angle
+    point (tuple/Py5Vector), angle
     x, y, angle (around 0, 0)
-    point (tuple/PVector), angle, center (tuple/PVector)
+    point (tuple/Py5Vector), angle, center (tuple/Py5Vector)
     x, y, angle, x_center, y_center
     """
     if len(args) == 2:
