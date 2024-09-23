@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+# WARNING! This is for legacy Processing Python Mode only! If you are using py5 check out py5_tools.animated_gif() 
 """
 gif_export.py - a GIF Animation export helper for Processing Python mode - v2020_12_16 
 Alexandre B A Villares http://abav.lugaralgum.com - Licensed under GPL v3
