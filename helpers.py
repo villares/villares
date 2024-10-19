@@ -1,20 +1,24 @@
 # -*- coding: UTF-8 -*-
 
-# From https://github.com/villares/villares/blob/main/file_helpers.py
+"""
+From https://github.com/villares/villares/blob/main/file_helpers.py
 
-# 2020-09-25 Added comment with date and URL!
-# 2020-11-28 Added sketch_name()
-# 2020-12-02 Renamed file_helpers -> helpers, brought in grid() and color.py in
-# 2020-12-04 Brought in triangle_area, rect_points, rotate_point, point_in_screen
-# 2021-01_26 Reverted 2020-12-04
-# 2021_03_05 imgext() -> has_img_ext()
-# 2021_06_08 Added lerp_tuple()
-# 2022_06_13 Added save_png_with_src() (for py5 only)
-# 2022_07_14 If on py5 imported mode, save_png_with_src now tries folder+'.py'
-# 2022_07_27 Added datetimestamp() & tweaks to save_png_with_src
-# 2022_08_03 Added get_arduino() based on PyFirmata (for py5 only)
-# 2023_08_15 DONE checked I can't use __file__ inside save_png_with_src
-# 2024-02-01 TODO (re)move things to image_helpers, fix or delete adicionar_imagens
+2020-09-25 Added comment with date and URL!
+2020-11-28 Added sketch_name()
+2020-12-02 Renamed file_helpers -> helpers, brought in grid() and color.py in
+2020-12-04 Brought in triangle_area, rect_points, rotate_point, point_in_screen
+2021-01_26 Reverted 2020-12-04
+2021_03_05 imgext() -> has_img_ext()
+2021_06_08 Added lerp_tuple()
+2022_06_13 Added save_png_with_src() (for py5 only)
+2022_07_14 If on py5 imported mode, save_png_with_src now tries folder+'.py'
+2022_07_27 Added datetimestamp() & tweaks to save_png_with_src
+2022_08_03 Added get_arduino() based on PyFirmata (for py5 only)
+2023_08_15 DONE checked I can't use __file__ inside save_png_with_src
+2024-02-01 DONE (re)move things to image_helpers
+           TODO fix or delete adicionar_imagens
+2024-10-19 Adding save_snapshot_and_code()
+"""
 
 try:
     lerp
@@ -26,59 +30,6 @@ except NameError:
     from py5 import push_style as pushStyle
     from py5 import sketch_path as sketchPath
     
-
-# def adicionar_imagens(selection, imagens=None):
-#     if imagens is None:
-#         imagens = []
-#     if selection == None:
-#         print("Seleção cancelada.")
-#     else:
-#         dir_path = selection.getAbsolutePath()
-#         print("Pasta selecionada: " + dir_path)
-#         for file_name, file_path in lista_imagens(dir_path):
-#             img = loadImage(file_path)
-#             img_name = file_name.split('.')[0]
-#             print("imagem " + img_name + " carregada.")
-#             imagens.append((img_name, img))
-#         print('Número de imagens: ' + str(len(imagens)))
-#     return imagens
-# 
-# def lista_imagens(dir=None):
-#     """
-#     Devolve uma a lista de tuplas com os nomes dos arquivos de imagem e os caminhos
-#     completos para cada uma das images na pasta `dir` ou na pasta /data/ do sketch.
-#     Requer a função has_image_ext() para decidir quais extensões aceitar.
-#     """
-#     from os import listdir
-#     from os.path import isfile, join
-#     data_path = dir or sketchPath('data')  # will return error later if no data folder!
-#     try:
-#         f_list = [(f, join(data_path, f)) for f in listdir(data_path)
-#                   if isfile(join(data_path, f)) and has_image_ext(f)]
-#     except Exception as e:
-#         print("Erro ({0}): {1}".format(e.errno, e.strerror))
-#         return []
-#     return f_list
-# 
-# def has_image_ext(file_name):
-#     """
-#     Return True if file_name ends with
-#     one of the valid_extensions.
-#     """
-#     valid_extensions = (
-#         'jpg',
-#         'png',
-#         'jpeg',
-#         'gif',
-#         'tif',
-#         'tga',
-#         'svg',
-#     )
-#     extension = Path(file_name).suffix.lower()[1:]
-#     return extension in valid_extensions
-# 
-# is_image_ext = imgext = has_image_ext 
-
 def sketch_name():
     """Return sketch name."""
     from os import path
@@ -210,7 +161,17 @@ def save_png_with_src(output=None, *args, **kwargs):
     # read back and print...
     # target_image = PIL.Image.open(output)
     # print(target_image.info['code'])
-    
+
+def save_snapshot_and_code():
+    import shutil
+    from py5 import sketch_path, Path, save
+    path = sketch_path()
+    has_image = Path(__file__[:-3]+'.png').is_file()
+    number = len(list(path.iterdir())) - has_image
+    snap_name = f'{number:03d}'  # 001, 002 ....
+    save(path / snap_name / (snap_name + '.png')) 
+    shutil.copyfile(__file__, path / snap_name / (snap_name + '.py'))
+
 def get_arduino(port=None):
     """
     This is a PyFirmata 'helper' that tries to connect to
