@@ -145,7 +145,7 @@ def p_circle_arc(x, y, radius, start_ang, sweep_ang, mode=0, **kwargs):
           mode=mode, **kwargs)
 
 def circle_arc_pts(x, y, radius, start_ang, sweep_ang, **kwargs):
-    arc_pts(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
+    return arc_pts(x, y, radius * 2, radius * 2, start_ang, start_ang + sweep_ang,
               **kwargs)
 
 def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
