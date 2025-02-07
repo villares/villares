@@ -44,15 +44,15 @@ def is_img_ext(file_name):
     one of the valid_extensions.
     """
     valid_extensions = (
-        'jpg',
-        'png',
-        'jpeg',
-        'gif',
-        'tif',
-        'tga',
-        'svg',
+        '.jpg',
+        '.png',
+        '.jpeg',
+        '.gif',
+        '.tif',
+        '.tga',
+        '.svg',
     )
-    extension = Path(file_name).suffix.lower()[1:]
+    extension = Path(file_name).suffix.lower()
     return extension in valid_extensions
 
 is_image_ext = imgext = has_image_ext 
