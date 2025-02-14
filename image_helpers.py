@@ -1,4 +1,3 @@
-#!/home/villares/miniconda3/bin/python
 
 from pathlib import Path
 from os import listdir
