@@ -10,7 +10,7 @@
     - I try to make **a new drawing with code everyday**, and I put the results at  [skech-a-day](https://abav.lugaralgum.com/sketch-a-day).
 - 👯 I’d like to collaborate on open resources to teach programming.
     - I collect tools **for teaching Python in a visual output** [here](https://github.com/villares/Resources-for-teaching-programming).
-    - If you find the things I share here usefull, **consider supporting my work!** You can use [this PayPal donation link](https://www.paypal.com/donate/?hosted_button_id=5B4MZ78C9J724), [gumroad.com/villares](https://gumroad.com/villares), [liberapay.com/villares](https://liberapay.com/villares/), or if you are in Brazil, PIX: `46c37783-5edb-4f1c-b3a8-1309db11488c` (chave aleatória).
+    - If you find the things I share here usefull, **consider supporting my work!** You can use [this PayPal donation link](https://www.paypal.com/donate/?hosted_button_id=5B4MZ78C9J724), [Wise](https://wise.com/pay/me/alexandrev562), [liberapay.com/villares](https://liberapay.com/villares/), or if you are in Brazil, PIX: `46c37783-5edb-4f1c-b3a8-1309db11488c` (chave aleatória).
     - You can check out [**my Domestika course, Design with Python**](https://www.domestika.org/pt/courses/4307-design-com-python-programacao-para-um-contexto-visual/a_b_a_villares)
 - 😄 Pronouns: he/him
 - 📫 How to reach me: [Mastodon](ciberlandia.pt/@villares) or [Email](https://abav.lugaralgum.com/contato).
