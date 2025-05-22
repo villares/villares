@@ -1,14 +1,11 @@
-# IMPORTED MODE CODE
-
 """
 From https://github.com/villares/villares/blob/main/geometry_helpers.py
 
 2020-09-25 Started this at line_helpers.py
 2025_05_21 Reboot as geometry_helpers.py (possibly py5 only)
 """
-import py5
-from py5 import EPSILON, CORNER
-
+from py5 import *
+#from py5 import EPSILON, CORNER, Py5Vector
 import shapely
 
 class Line():
@@ -202,7 +199,7 @@ def pairwise(iterable):
     next(b, None)
     return list(zip(a, b))
 
-def min_max(points):
+def bounding_box(points):
     """
     Return two tuples or Py5Vectors with the most extreme coordinates,
     resulting in "bounding box" corners.
@@ -213,7 +210,7 @@ def min_max(points):
     else:
         return tuple(map(min, coords)), tuple(map(max, coords))
 
-bounding_box = min_max
+min_max = bounding_box
 
 def triangle_area(a, b, c):
     area = (a[0] * (b[1] - c[1]) +
@@ -320,7 +317,7 @@ def centroid(pts):
 def inter_lines(given_line, poly_points):
     """ 
     Line objects that indicate the complete overlap of a given line
-    and a polygon (provided as a collection og points)
+    and a polygon (provided as a collection of points)
     """
     inter_pts = []
     for a, b in poly_edges(poly_points):
@@ -371,12 +368,17 @@ def corner_angle(corner, a, b):
     return abs(ac - bc)           
   
 def hatch_poly(*args, **kwargs):
+    """
+    kwargs:
+    spaceing=5
+    function
+    base
+    """
     if len(args) == 2:
         pts, angle = args
-        bound = min_max(pts)
-        diag = Line(bound)
+        diag = Line(bounding_box(pts))
         d = diag.dist()
-        cx, cy, _ = diag.midpoint()
+        cx, cy, *_ = diag.midpoint()
     else:
         x, y, w, h, angle = args
         pts = rect_points(x, y, w, h, kwargs.pop('mode', CORNER))
@@ -393,8 +395,8 @@ def hatch_poly(*args, **kwargs):
     rr = [rotate_point(x, y, angle, cx, cy)
           for x, y in rect_points(cx, cy, d, d, mode=CENTER)]
     # stroke(255, 0, 0)   # debug mode
-    ab = Line(rr[0], rr[1])  # ;ab.plot()  # debug mode
-    cd = Line(rr[3], rr[2])  # ;cd.plot()  # debug mode
+    ab = Line(rr[0], rr[1])  # ;ab.draw()  # debug mode
+    cd = Line(rr[3], rr[2])  # ;cd.draw()  # debug mode
     for i in range(num + 1):
         if odd_function is not False and i % 2:
             kwargs['function'] = odd_function
@@ -406,7 +408,7 @@ def hatch_poly(*args, **kwargs):
             kwargs['base_line'] = Line(abp, cdp)
         inter_line_list = inter_lines(Line(abp, cdp), pts)
         for hli in inter_line_list:
-            hli.plot(**kwargs)
+            hli.draw(**kwargs)
     return ps
 
 hatch_rect = hatch_poly
