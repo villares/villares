@@ -21,6 +21,7 @@ From https://github.com/villares/villares/blob/main/arcs.py
            (now it means radius=0) and WIP still struggling with flipping and radius reduction behavior 
 2023_08_05 WIP py5 vertices optimization and some other refactoring
 2023_10_15 Making py5 names the default, preparing for an arc_tangents... repo update. 
+2025 This is legacy. I'm rebooting at arc_helpers.py without Processing.py support. 
 """
 
 from warnings import warn
