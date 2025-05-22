@@ -27,6 +27,7 @@ From https://github.com/villares/villares/blob/main/line_geometry.py
 2022_06_13 Adding simplified_points()
 2023_10_15 WIP Making py5 names the default. TODO: deal with PVectors (remove?)
 2024_06_06 Made Py5Vectora/n alias to PVector for old sketches. Not tested.
+2025 I will try to restart this at geometry_helpers.py
 """
 
 # The following block is for compatibility with legacy Processing Python mode
