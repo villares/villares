@@ -278,8 +278,8 @@ def par_hatch(points, divisions, *sides):
         a, b = points[-1 + s], points[+0 + s]
         d, c = points[-2 + s], points[-3 + s]
         for i in range(1, divisions):
-            s0 = lerp_tuple(a, b, i / float(divisions))
-            s1 = lerp_tuple(d, c, i / float(divisions))
+            s0 = lerp_tuple(a, b, i / divisions)
+            s1 = lerp_tuple(d, c, i / divisions)
             lines.append(Line(s0, s1))
     return lines
 
