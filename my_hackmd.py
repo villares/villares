@@ -104,6 +104,7 @@ class API():
 
     def update_note(
         self, note_id,
+        title=None,
         content=None,
         read_permission=None,
         write_permission=None,
@@ -115,6 +116,7 @@ class API():
         url_plus_id = url + note_id
         post_data = {}
         for key, value in (
+            ("title", title),
             ("content", content),
             ("readPermission", read_permission),
             ("writePermission", write_permission),
@@ -130,7 +132,7 @@ class API():
         return res.text
 
     def update_team_note(
-        self, team,
+        self, team, note_id,
         title=None,
         content=None,
         read_permission=None,
@@ -139,13 +141,14 @@ class API():
         permalink=None,
         ):
         return self.update_note(
+            note_id,
             title=title,
             content=content,
             read_permission=read_permission,
             write_permission=write_permission,
             comment_permission=comment_permission,
             permalink=permalink,
-            url=f"https://api.hackmd.io/v1/teams/{team}/notes")
+            url=f"https://api.hackmd.io/v1/teams/{team}/notes/")
 
     def delete_note(self, note_id):
         url = f"https://api.hackmd.io/v1/notes/{note_id}"
