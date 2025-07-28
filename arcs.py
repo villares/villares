@@ -159,7 +159,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
     if mode == 0:
         begin_shape()
     vertex_pts = arc_pts(cx, cy, w, h, start_angle, end_angle, num_points)
-    if vertex_func is None or vertex_fun == vertex:
+    if vertex_func is None or vertex_func == vertex:
         vertices(vertex_pts)
     else:
         for vx, vy in vertex_pts:
@@ -543,7 +543,7 @@ def reduce_radius(p1, p2, r1, r2, reduce_both=True):
     ri = abs(r1 - r2)
     if d - ri <= 0:
         if reduce_both:
-           r1, r2 = (remap(d, ri + 1, 0, r1, (r1 + r2) / 2),
+            r1, r2 = (remap(d, ri + 1, 0, r1, (r1 + r2) / 2),
                      remap(d, ri + 1, 0, r2, (r1 + r2) / 2))
         elif abs(r1) > abs(r2):
             r1 = remap(d, ri + 1, 0, r1, r2)
