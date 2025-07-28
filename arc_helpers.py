@@ -177,7 +177,7 @@ def arc_filleted_poly(p_list, r_list=None, **kwargs):
     open_poly = kwargs.pop('open_poly', False)  # assumes a closed poly by default
     assert p_list, 'No points were provided.'
     assert not ('radius' in kwargs and r_list),\
-           "You can't use a radii list and a radius kwarg together."
+           "You can\'t use a radii list and a radius kwarg together."
     if r_list is None:
         r_list = [kwargs.pop('radius', 0)] * len(p_list)
     p_list, r_list = list(p_list), list(r_list)
@@ -317,13 +317,13 @@ def arc_augmented_poly(vs, radii=None, **kwargs):
         'Number of points and radii provided not the same.'    
     assert vs, 'No points were provided.'
     assert not ('radius' in kwargs and radii),\
-        'You can't use a radii list and a radius kwarg together.'
+        'You can\'t use a radii list and a radius kwarg together.'
     if radii is None:
         radii = [kwargs.pop('radius', 0)] * len(vs)
     radii_copy = list(radii)
     check_intersection = kwargs.pop('check_intersection', False)
     assert not (check_intersection and arc_func), \
-        'check_intersection can't be used with a custom arc_func.'
+        "check_intersection can\'t be used with a custom arc_func."
     auto_flip = kwargs.pop('auto_flip', True)
     gradual_flip = kwargs.pop('gradual_flip', False)
     reduce_both = kwargs.pop('reduce_both', True)
@@ -426,7 +426,7 @@ def arc_augmented_points(vs, radii=None, **kwargs):
         return (p0[0] + p1[0]) * 0.5, (p0[1] + p1[1]) * 0.5
     assert vs, 'No points were provided.'
     assert not ('radius' in kwargs and radii),\
-        "You can't use a radii list and a radius kwarg together."
+        'You can\'t use a radii list and a radius kwarg together.'
     if radii is None:
         radii = [kwargs.pop('radius', 0)] * len(vs)
     radii_copy = list(radii)
@@ -565,9 +565,9 @@ def var_bar(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     arc_func = kwargs.pop('arc_func', b_arc)
     shorter = kwargs.pop('shorter', 0)
     assert not (shorter and r1 != r2),\
-        "Can't draw shorter var_bar with different radii. r1={} r2={}".format(r1, r2)
+        "Can\'t draw shorter var_bar with different radii. r1={} r2={}".format(r1, r2)
     assert not (kwargs and arc_func == b_arc),\
-        "Can't use keyword arguments with b_arc. {}".format(kwargs)
+        "Can\'t use keyword arguments with b_arc. {}".format(kwargs)
     d = dist(p1x, p1y, p2x, p2y)
     ri = r1 - r2
     if d > abs(ri):
@@ -606,7 +606,7 @@ def var_bar_pts(p1x, p1y, p2x, p2y, r1, r2=None, **kwargs):
     r2 = r2 if r2 is not None else r1
     shorter = kwargs.pop('shorter', 0)
     assert not (shorter and r1 != r2),\
-        "Can't draw shorter var_bar with different radii"
+        "Can\'t draw shorter var_bar with different radii"
     d = dist(p1x, p1y, p2x, p2y)
     ri = r1 - r2
     result = []
