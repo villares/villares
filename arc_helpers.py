@@ -8,7 +8,13 @@ From https://github.com/villares/villares/blob/main/arc_helpers.py
            renamed op_list -> vs & or_list -> radii
 """
 
-from py5 import *  # Maybe not a good strategy... I should convert to module or class mode
+from py5 import (
+    TOP, BOTTOM, UP, DOWN, LEFT, RIGHT,
+    PI, HALF_PI, TWO_PI, sin, cos, tan, atan2, asin, degrees,
+    dist, remap, sqrt, arc,  circle, ellipse, text, text_size,
+    CLOSE, begin_shape, end_shape, vertex, vertices, bezier_vertex,
+    push, pop, translate, rotate,
+    )
 
 DEBUG, TEXT_HEIGHT = False, 12  # For debug
 
@@ -129,7 +135,7 @@ def p_arc(cx, cy, w, h, start_angle, end_angle, mode=0,
     if mode == 0:
         begin_shape()
     vertex_pts = arc_pts(cx, cy, w, h, start_angle, end_angle, num_points)
-    if vertex_func is None or vertex_fun == vertex:
+    if vertex_func is None or vertex_func == vertex:
         vertices(vertex_pts)
     else:
         for vx, vy in vertex_pts:
@@ -312,15 +318,15 @@ def arc_augmented_poly(vs, radii=None, **kwargs):
     """
     arc_func = kwargs.pop('arc_func', b_arc)
     if arc_func == arc_pts:
-        return arc_augmented_points(vs, radii, **kwargs)
-    assert len(vs) == len(radii_copy),\
-        'Number of points and radii provided not the same.'    
+        return arc_augmented_points(vs, radii, **kwargs)  
     assert vs, 'No points were provided.'
     assert not ('radius' in kwargs and radii),\
         'You can\'t use a radii list and a radius kwarg together.'
     if radii is None:
         radii = [kwargs.pop('radius', 0)] * len(vs)
     radii_copy = list(radii)
+    assert len(vs) == len(radii_copy),\
+        'Number of points and radii provided not the same.'  
     check_intersection = kwargs.pop('check_intersection', False)
     assert not (check_intersection and arc_func), \
         "check_intersection can\'t be used with a custom arc_func."
@@ -373,7 +379,7 @@ def arc_augmented_poly(vs, radii=None, **kwargs):
     # check basic "skeleton poly" intersection (whithout the p_arc approx.)
     if check_intersection:
         skeleton_points = []
-        for ang, p1, p2 in a_list:
+        for _, p1, p2 in a_list:
             skeleton_points.append(p1)
             skeleton_points.append(p2)
         if is_poly_self_intersecting(skeleton_points):
@@ -505,8 +511,8 @@ def reduce_radius(p1, p2, r1, r2, reduce_both=True):
     ri = abs(r1 - r2)
     if d - ri <= 0:
         if reduce_both:
-           r1, r2 = (remap(d, ri + 1, 0, r1, (r1 + r2) / 2),
-                     remap(d, ri + 1, 0, r2, (r1 + r2) / 2))
+            r1, r2 = (remap(d, ri + 1, 0, r1, (r1 + r2) / 2),
+                      remap(d, ri + 1, 0, r2, (r1 + r2) / 2))
         elif abs(r1) > abs(r2):
             r1 = remap(d, ri + 1, 0, r1, r2)
         else:
