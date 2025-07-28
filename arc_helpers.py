@@ -9,11 +9,10 @@ From https://github.com/villares/villares/blob/main/arc_helpers.py
 """
 
 from py5 import (
-    TOP, BOTTOM, UP, DOWN, LEFT, RIGHT,
-    PI, HALF_PI, TWO_PI, sin, cos, tan, atan2, asin, degrees,
-    dist, remap, sqrt, arc,  circle, ellipse, text, text_size,
-    CLOSE, begin_shape, end_shape, vertex, vertices, bezier_vertex,
-    push, pop, translate, rotate,
+    TOP, BOTTOM, UP, DOWN, LEFT, RIGHT, PI, HALF_PI, TWO_PI, CLOSE,
+    sin, cos, tan, atan2, asin, degrees, dist, remap, sqrt,
+    push, pop, translate, rotate, arc, circle, ellipse, text, text_size,
+    begin_shape, end_shape, vertex, vertices, bezier_vertex,
     )
 
 DEBUG, TEXT_HEIGHT = False, 12  # For debug
