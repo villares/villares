@@ -2,16 +2,11 @@
 From https://github.com/villares/villares/blob/main/arc_helpers.py
 
 2020-09-22 Merges/renames several versions of the arc related functions
-... started at arcs.py ...
+           ... started at arcs.py ...
 2025_05_21 Rebooting this as arc_helpers.py
+2025_07_28 Copied in is_poly_self_intersecting & triangle_area, removed warning/warn,
+           renamed op_list -> vs & or_list -> radii
 """
-
-from warnings import warn
-
-try:
-    from geometry_helpers import is_poly_self_intersecting, triangle_area
-except ModuleNotFoundError:
-    from villares.geometry_helpers import is_poly_self_intersecting, triangle_area
 
 from py5 import *  # Maybe not a good strategy... I should convert to module or class mode
 
@@ -234,8 +229,9 @@ def arc_corner(pc, p1, p2, r, **kwargs):
     2020-11-11 Avoiding the use of PVector
     2022-06-11 Now returns the result of arc_pts
     """
-    arc_func = kwargs.pop('arc_func', b_arc)  # draws with bezier approx. arc by default
-
+    arc_func = kwargs.pop('arc_func', b_arc)  # uses bezier approx. arc by default
+    # if passed arc_func is arc_pts, this function will return poly coordinantes only
+    
     def proportion_point(pt, segment, L, dx, dy):
         factor = float(segment) / L if L != 0 else segment
         return (pt[0] - dx * factor), (pt[1] - dy * factor)
@@ -301,7 +297,7 @@ def arc_corner(pc, p1, p2, r, **kwargs):
              start_angle, start_angle + sweep_angle, mode=2, **kwargs)
 
 
-def arc_augmented_poly(op_list, or_list=None, **kwargs):
+def arc_augmented_poly(vs, radii=None, **kwargs):
     """
     Draw a continous PShape/Py5Shape "Polyline" as if around pins of various diameters.
     Has an ugly check_intersection mode that does not draw and "roughly" checks
@@ -310,28 +306,28 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     2020-09-24 Removed Bezier mode in favour of arc_func + any keyword arguments.
     2020-09-26 Moved arc_func to kwargs, updates exceptions
     2021-07-26 Added auto-flip switch/option (when concave vertex radius = -radius)
-    2022-06-11 Added remap py5 compatibility alias & radius kwarg for or_list=None
+    2022-06-11 Added remap py5 compatibility alias & radius kwarg for radii=None
     2022-06-14 Connected to arc_augmented_points. Added reduce_both kwarg.
+    2025-07-28 Removed warning, disallowed check_intersection and arc_func toghether.
     """
     arc_func = kwargs.pop('arc_func', b_arc)
     if arc_func == arc_pts:
-        return arc_augmented_points(op_list, or_list, **kwargs)
-    
-    assert op_list, 'No points were provided.'
-    assert not ('radius' in kwargs and or_list),\
-           "You can't use a radii list and a radius kwarg together."
-    if or_list is None:
-        or_list = [kwargs.pop('radius', 0)] * len(op_list)
-    r2_list = list(or_list)
-    assert len(op_list) == len(r2_list),\
-        'Number of points and radii provided not the same.'
+        return arc_augmented_points(vs, radii, **kwargs)
+    assert len(vs) == len(radii_copy),\
+        'Number of points and radii provided not the same.'    
+    assert vs, 'No points were provided.'
+    assert not ('radius' in kwargs and radii),\
+        'You can't use a radii list and a radius kwarg together.'
+    if radii is None:
+        radii = [kwargs.pop('radius', 0)] * len(vs)
+    radii_copy = list(radii)
     check_intersection = kwargs.pop('check_intersection', False)
-
+    assert not (check_intersection and arc_func), \
+        'check_intersection can't be used with a custom arc_func.'
     auto_flip = kwargs.pop('auto_flip', True)
     gradual_flip = kwargs.pop('gradual_flip', False)
     reduce_both = kwargs.pop('reduce_both', True)
-    if check_intersection and arc_func:
-        warn("check_intersection mode overrides arc_func (arc_func ignored).")
+
     if check_intersection:
         global _points, vertex_func
         _points = []
@@ -342,14 +338,14 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
         vertex_func = vertex
     # remove overlapping adjacent points
     p_list, r_list = [], []
-    for i1, p1 in enumerate(op_list):
+    for i1, p1 in enumerate(vs):
         i2 = (i1 - 1)
-        p2, r2, r1 = op_list[i2], r2_list[i2], r2_list[i1]
+        p2, r2, r1 = vs[i2], radii_copy[i2], radii_copy[i1]
         if dist(p1[0], p1[1], p2[0], p2[1]) > 1:  # or p1 != p2:
             p_list.append(p1)
             r_list.append(r1)
         else:
-            r2_list[i2] = min(r1, r2)
+            radii_copy[i2] = min(r1, r2)
     # invert radius
     for i1, p1 in enumerate(p_list):
         i0 = (i1 - 1)
@@ -421,22 +417,20 @@ def arc_augmented_poly(op_list, or_list=None, **kwargs):
     if check_intersection:
         return is_poly_self_intersecting(_points)
 
-def arc_augmented_points(op_list, or_list=None, **kwargs):
+def arc_augmented_points(vs, radii=None, **kwargs):
     """
     A version of arc_augmented_poly that returns the points
-    of a poly-approximation with arc_pts
+    of a poly-approximation with arc_pts.
     """
-    
     def mid(p0, p1):
         return (p0[0] + p1[0]) * 0.5, (p0[1] + p1[1]) * 0.5
-    
-    assert op_list, 'No points were provided.'
-    assert not ('radius' in kwargs and or_list),\
+    assert vs, 'No points were provided.'
+    assert not ('radius' in kwargs and radii),\
         "You can't use a radii list and a radius kwarg together."
-    if or_list is None:
-        or_list = [kwargs.pop('radius', 0)] * len(op_list)
-    r2_list = list(or_list)
-    assert len(op_list) == len(r2_list),\
+    if radii is None:
+        radii = [kwargs.pop('radius', 0)] * len(vs)
+    radii_copy = list(radii)
+    assert len(vs) == len(radii_copy),\
         'Number of points and radii provided not the same.'
     auto_flip = kwargs.pop('auto_flip', True)
     gradual_flip = kwargs.pop('gradual_flip', False) 
@@ -444,28 +438,29 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
     pts_list = []
     # remove overlapping adjacent points
     p_list, r_list = [], []
-    p2_list = list(op_list)
+    p2_list = list(vs)
     for i1, p1 in enumerate(p2_list):
         i2 = (i1 + 1) % len(p2_list)
-        p2, r2, r1 = p2_list[i2], r2_list[i2], r2_list[i1]
+        p2, r2, r1 = p2_list[i2], radii_copy[i2], radii_copy[i1]
         d = dist(p1[0], p1[1], p2[0], p2[1])
         if d > abs(r1 - r2):
             p_list.append(p1)
             r_list.append(r1)
         else:
             p2_list[i2] = mid(p1, p2)
-            r2_list[i2] = max(r1, r2)
+            radii_copy[i2] = max(r1, r2)
     # invert radius
     for i1, p1 in enumerate(p_list):
         i0 = (i1 - 1)
         p0 = p_list[i0]
         i2 = (i1 + 1) % len(p_list)
         p2 = p_list[i2]
-        a = triangle_area(p0, p1, p2) / 1000.0
-        if auto_flip and a < 0:
-            r_list[i1] = -r_list[i1]
-            if gradual_flip:
-                r_list[i1] = r_list[i1] * min(1, abs(a))
+        if auto_flip:
+            a = triangle_area(p0, p1, p2) / 1000.0
+            if a < 0:
+                r_list[i1] = -r_list[i1]
+                if gradual_flip:
+                    r_list[i1] = r_list[i1] * min(1, abs(a))
     # reduce radius that won't fit
     for i1, p1 in enumerate(p_list):
         i2 = (i1 + 1) % len(p_list)
@@ -478,14 +473,12 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
         p2, r2, r1 = p_list[i2], r_list[i2], r_list[i1]
         cct = circ_circ_tangent(p1, p2, r1, r2)
         a_list.append(cct)
-    # now draw it!
+    # now put it all together!
     for i1, ia in enumerate(a_list):
         i2 = (i1 + 1) % len(a_list)
         p1, p2, r1, r2 = p_list[i1], p_list[i2], r_list[i1], r_list[i2]
         a1, p11, p12 = ia
         a2, p21, p22 = a_list[i2]
-        if DEBUG:
-            circle(p1[0], p1[1], r1 * 2)
         if a1 != None and a2 != None:
             start = a1 if a1 < a2 else a1 - TWO_PI # was <
             if r2 < 0:  # was <=
@@ -497,16 +490,10 @@ def arc_augmented_points(op_list, or_list=None, **kwargs):
                 else:
                     a2 -= TWO_PI
             if abs(a2 - start) != TWO_PI:
-                pts_list.extend(arc_pts(p2[0], p2[1], r2 * 2, r2 * 2, start, a2,
-                                        **kwargs))
-            if DEBUG:
-                text_size(TEXT_HEIGHT)
-                text(' {:0.2f} {:0.2f}'.format(r2, degrees(abs_angle)), p2[0], p2[1])
+                pts_list.extend(arc_pts(p2[0], p2[1], r2 * 2, r2 * 2, start, a2))
         else:
             # when the the segment is smaller than the diference between
             # radius, circ_circ_tangent won't renturn the angle
-            if DEBUG:
-                ellipse(p2[0], p2[1], r1, r1)
             if a1:
                 pts_list.append((p12[0], p12[1]))
             if a2:
@@ -642,3 +629,42 @@ def rotate_offset_points(pts, angle, offx, offy, y0=0, x0=0):
     return [(((xp - x0) * cos(angle) - (yp - y0) * sin(angle)) + x0 + offx,
              ((yp - y0) * cos(angle) + (xp - x0) * sin(angle)) + y0 + offy)
             for xp, yp in pts]
+
+def triangle_area(a, b, c):
+    return (a[0] * (b[1] - c[1]) +
+            b[0] * (c[1] - a[1]) +
+            c[0] * (a[1] - b[1]))
+
+def is_poly_self_intersecting(poly_points):
+    edges = pairwise(poly_points) + [(poly_points[-1], poly_points[0])]
+    for a, b in edges[::-1]:
+        for c, d in edges[2::]:
+            # test only non consecutive edges
+            if (a != c) and (b != c) and (a != d):
+                if simple_intersect(a, b, c, d):
+                    return True
+    return False
+
+def pairwise(iterable):
+    from itertools import tee
+    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return list(zip(a, b))
+
+def ccw(*args):
+    """Returns True if the points are arranged counter-clockwise in the plane"""
+    if len(args) == 1:
+        a, b, c = args[0]
+    else:
+        a, b, c = args
+    return (b[0] - a[0]) * (c[1] - a[1]) > (b[1] - a[1]) * (c[0] - a[0])
+
+def simple_intersect(*args):
+    """Returns True if line segments intersect."""
+    if len(args) == 2:    
+        (a1, b1), (a2, b2) = args[0], args[1]
+    else:
+        a1, b1, a2, b2 = args
+    return ccw(a1, b1, a2) != ccw(a1, b1, b2) and ccw(a2, b2, a1) != ccw(a2, b2, b1)
+

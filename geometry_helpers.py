@@ -213,10 +213,9 @@ def bounding_box(points):
 min_max = bounding_box
 
 def triangle_area(a, b, c):
-    area = (a[0] * (b[1] - c[1]) +
+    return (a[0] * (b[1] - c[1]) +
             b[0] * (c[1] - a[1]) +
             c[0] * (a[1] - b[1]))
-    return area
 
 def poly_area(points):
     points = list(points)
@@ -284,7 +283,7 @@ def par_hatch(points, divisions, *sides):
     return lines
 
 def is_poly_self_intersecting(poly_points):
-    edges = poly_edges(poly_points)
+    edges = pairwise(poly_points) + [(poly_points[-1], poly_points[0])]
     for a, b in edges[::-1]:
         for c, d in edges[2::]:
             # test only non consecutive edges
