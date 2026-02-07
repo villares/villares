@@ -3,8 +3,8 @@
 ![animação Hello World](hello.gif)
 
 > This animation is made with points in a Python collections.deque data structure, added by dragging the mouse (code shown bellow)
-- 🔭 I'm currently working on a PhD at Unicamp.
-- 🌱 I should be talking less and concentrating, but...
+- 🔭 I have just finished a PhD at Unicamp by the end of 2025.
+- 🌱 I have very little idea of what I'm going to do now...
 - 💬 Ask me about **drawing with Python**! 
     - Check out [**py5**](https://py5coding.org) and [**pyp5js**](berinhard.github.io/pyp5js/pyodide/), they bring in the vocabulary from Processing & P5js!
     - I try to make **a new drawing with code everyday**, and I put the results at  [skech-a-day](https://abav.lugaralgum.com/sketch-a-day).
