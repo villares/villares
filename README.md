@@ -6,7 +6,7 @@
 - 🔭 I have just finished a PhD at Unicamp by the end of 2025.
 - 🌱 I have very little idea of what I'm going to do now...
 - 💬 Ask me about **drawing with Python**! 
-    - Check out [**py5**](https://py5coding.org) and [**pyp5js**](berinhard.github.io/pyp5js/pyodide/), they bring in the vocabulary from Processing & P5js!
+    - Check out [**py5**](https://py5coding.org) and my modified [**pyp5js**](https://abav.lugaralgum.com/pyp5js/py5mode/) hack, they bring in the vocabulary from Processing & P5js!
     - I try to make **a new drawing with code everyday**, and I put the results at  [skech-a-day](https://abav.lugaralgum.com/sketch-a-day).
 - 👯 I’d like to collaborate on open resources to teach programming.
     - I collect tools **for teaching Python in a visual output** [here](https://github.com/villares/Resources-for-teaching-programming).
