@@ -2,7 +2,7 @@
 
 ![animação Hello World](hello.gif)
 
-> This animation is made with points in a Python collections.deque data structure, added by dragging the mouse (code shown bellow)
+> This animation is made with points in a Python `collections.deque` data structure, added by dragging the mouse (code bellow).
 
 ```python
 from collections import deque  # a double-ended queue
