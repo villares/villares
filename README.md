@@ -32,8 +32,7 @@ def draw():   # py5 will call this in a loop
     for i, (x, y) in enumerate(history):
         py5.fill(i / 2, 255, 255, 128)
         py5.circle(x, y, 8 + i / 16)
-    if history:
-        history.append(history.popleft())
+    history.rotate(-1)  # Thank you Ramalho! Previously `if h: h.append(h.popleft())`
 
 def mouse_dragged():  # py5 will call this when you drag the mouse
     history.append((py5.mouse_x, py5.mouse_y))
