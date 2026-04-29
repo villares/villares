@@ -29,11 +29,10 @@ def key_pressed():   # py5 will call this when a key is pressed
 
 py5.run_sketch()
 ```
-- 😄 Pronouns: he/him
-- 🔭 I have just finished a PhD at Unicamp by the end of 2025. I have very little idea of what I'm going to do now...
 - 💬 Ask me about **drawing with Python**! 
     - Check out [**py5**](https://py5coding.org) and my modified [**pyp5js**](https://abav.lugaralgum.com/pyp5js/py5mode/) hack, they bring in the vocabulary from Processing & P5js!
     - I try to make **a new drawing with code everyday**, and I put the results at  [skech-a-day](https://abav.lugaralgum.com/sketch-a-day).
+- 🔭 I have just finished a PhD at Unicamp by the end of 2025. I have very little idea of what I'm going to do now...
 - 👯 I’d like to collaborate on open resources to teach programming.
     - I collect tools **for teaching Python in a visual output** [here](https://codeberg.org/villares/Resources-for-teaching-programming).
     - If you find the things I share here usefull, **consider supporting my work!** You can use [this PayPal donation link](https://www.paypal.com/donate/?hosted_button_id=5B4MZ78C9J724), [Wise](https://wise.com/pay/me/alexandrev562), [liberapay.com/villares](https://liberapay.com/villares/), or if you are in Brazil, PIX: `46c37783-5edb-4f1c-b3a8-1309db11488c` (chave aleatória).
