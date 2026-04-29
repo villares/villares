@@ -34,7 +34,7 @@ py5.run_sketch()
     - I try to make **a new drawing with code everyday**, and I put the results at  [skech-a-day](https://abav.lugaralgum.com/sketch-a-day).
 - 🔭 I have just finished a PhD at Unicamp by the end of 2025. I have very little idea of what I'm going to do now...
 - 👯 I’d like to collaborate on open resources to teach programming.
-    - I collect tools **for teaching Python in a visual output** [here](https://codeberg.org/villares/Resources-for-teaching-programming).
+    - I collect tools **for teaching Python with visual results** [here](https://codeberg.org/villares/Resources-for-teaching-programming).
     - If you find the things I share here usefull, **consider supporting my work!** You can use [this PayPal donation link](https://www.paypal.com/donate/?hosted_button_id=5B4MZ78C9J724), [Wise](https://wise.com/pay/me/alexandrev562), [liberapay.com/villares](https://liberapay.com/villares/), or if you are in Brazil, PIX: `46c37783-5edb-4f1c-b3a8-1309db11488c` (chave aleatória).
     - You can check out [**my Domestika course, Design with Python**](https://www.domestika.org/pt/courses/4307-design-com-python-programacao-para-um-contexto-visual/a_b_a_villares)
 - 📫 How to reach me: [Mastodon](ciberlandia.pt/@villares) or [Email](https://abav.lugaralgum.com/contato).
