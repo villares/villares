@@ -39,4 +39,8 @@ py5.run_sketch()
     - You can check out [**my Domestika course, Design with Python**](https://www.domestika.org/pt/courses/4307-design-com-python-programacao-para-um-contexto-visual/a_b_a_villares)
 - 📫 How to reach me: [Mastodon](ciberlandia.pt/@villares) or [Email](https://abav.lugaralgum.com/contato).
 - ⚡ Fun fact: I actually use this repo to store some helper [code](https://github.com/villares/villares) I use in my drawings.
-- ⏰ But I'm slowly moving stuff to [codeberg.org/villares](https://codeberg.org/villares)
+- ⏰ I'm slowly moving stuff to [codeberg.org/villares](https://codeberg.org/villares)
+    - **material-aulas** [[repo](https://codeberg.org/villares/material-aulas/)] [[website](https://abav.lugaralgum.com/material-aulas)]
+    - **Python Parsons Problems with Visual Results** [[repo](https://codeberg.org/villares/python-parsons-visual)] [[website](https://abav.lugaralgum.com/python-parsons-visual)]
+    - [Arc, tangents & Bezier studies](https://codeberg.org/villares/arc_tangents_and_bezier_studies/)
+      
